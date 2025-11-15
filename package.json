@@ -1,0 +1,24 @@
+{
+  "name": "multiply-service",
+  "version": "1.0.0",
+  "description": "Simple backend service that multiplies a number by 3",
+  "main": "index.js",
+  "scripts": {
+    "cdk": "cdk",
+    "bootstrap": "cdk bootstrap",
+    "deploy": "cdk deploy",
+    "destroy": "cdk destroy",
+    "synth": "cdk synth",
+    "test": "node test-local.js"
+  },
+  "keywords": ["lambda", "api", "aws"],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-cdk-lib": "^2.120.0",
+    "constructs": "^10.3.0"
+  },
+  "devDependencies": {
+    "aws-cdk": "^2.120.0"
+  }
+}
