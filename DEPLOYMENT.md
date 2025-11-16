@@ -1,7 +1,12 @@
-# Frontend Deployment Guide
+# Deployment Guide
 
 ## Overview
-Your multiply service now includes a frontend web interface that allows users to input a number and see it multiplied by 3.
+
+This project supports **three separate environments**: local, test, and production. Each environment has its own AWS stack and configuration.
+
+**📚 For complete environment setup instructions, see [ENVIRONMENTS.md](ENVIRONMENTS.md)**
+
+This guide covers the basic deployment workflow.
 
 ## Architecture
 - **Frontend**: Static website hosted on AWS S3, distributed via CloudFront CDN with HTTPS
@@ -9,68 +14,111 @@ Your multiply service now includes a frontend web interface that allows users to
 - **CDN**: CloudFront for global distribution, caching, and HTTPS encryption
 - **Deployment**: AWS CDK
 
-## Before You Deploy
+## Environment Overview
 
-### Step 1: Update API Endpoint Configuration
+### Local Environment
+- No AWS deployment required
+- Frontend: `http://localhost:8080`
+- Backend: `http://localhost:3001`
+- Start with: `npm run local`
+- See [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md)
 
-1. Open `public/config.js`
-2. Replace `YOUR_API_ENDPOINT_HERE/multiply` with your actual API Gateway endpoint
-3. You can find your endpoint by running:
-   ```bash
-   npm run deploy
-   ```
-   Look for the output `MultiplyStack.MultiplyEndpoint`
+### Test Environment
+- AWS stack: `MultiplyStack-Test`
+- Configuration: `config/test.json`
+- Deploy with: `npm run deploy:test`
+- Safe to experiment and test
 
-**Example config.js:**
-```javascript
-const API_CONFIG = {
-    endpoint: 'https://abc123xyz.execute-api.us-east-1.amazonaws.com/prod/multiply'
-};
-```
+### Production Environment
+- AWS stack: `MultiplyStack-Prod`
+- Configuration: `config/prod.json` (gitignored)
+- Deploy with: `npm run deploy:prod`
+- Live user-facing environment
 
 ## Deployment Steps
 
-### 1. Deploy Everything to AWS
+### First Time Setup
 
-Since you've already deployed the backend, you can update the stack with the frontend:
+1. **Install dependencies**:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run deploy
-```
+2. **Bootstrap CDK** (one-time per AWS account/region):
+   ```bash
+   npm run bootstrap
+   ```
 
-This will:
-- Update your existing Lambda and API Gateway (if needed)
-- Create an S3 bucket for static website hosting (private)
-- Create a CloudFront distribution with HTTPS enabled
-- Upload your frontend files (HTML, CSS, JS) to S3
-- Automatically invalidate CloudFront cache on updates
+3. **Create production config** (if deploying to prod):
+   ```bash
+   cp config/prod.json.example config/prod.json
+   # Edit config/prod.json with your production secrets
+   ```
 
-**Note:** CloudFront distribution creation takes ~5-10 minutes on first deployment.
+### Deploy to Test Environment
 
-### 2. Get Your Website URL
+1. **Deploy the stack**:
+   ```bash
+   npm run deploy:test
+   ```
 
-After deployment completes, look for the output:
-```
-MultiplyStack.WebsiteUrl = https://d2ohaeiivgnrqq.cloudfront.net
-```
+2. **Note the outputs**:
+   ```
+   MultiplyStack-Test.CloudFrontDomain = d1234test.cloudfront.net
+   MultiplyStack-Test.MultiplyEndpoint = https://abc123.execute-api.us-west-2.amazonaws.com/prod/multiply
+   MultiplyStack-Test.WebsiteUrl = https://d1234test.cloudfront.net
+   ```
 
-This is your frontend URL!
+3. **Update frontend config** in `public/config.js`:
+   ```javascript
+   const API_ENDPOINTS = {
+     local: 'http://localhost:3001/multiply',
+     test: 'https://abc123.execute-api.us-west-2.amazonaws.com/prod/multiply',  // ← UPDATE
+     prod: 'https://xyz789.execute-api.us-west-2.amazonaws.com/prod/multiply'
+   };
 
-### 3. Test Your Application
+   const CLOUDFRONT_DOMAINS = {
+     test: 'd1234test.cloudfront.net',  // ← UPDATE
+     prod: 'd5678prod.cloudfront.net'
+   };
+   ```
 
-1. Open the Website URL in your browser
-2. Enter a number (e.g., 5)
-3. Click "Multiply by 3"
-4. You should see the result (15)
+4. **Redeploy** to update frontend with new config:
+   ```bash
+   npm run deploy:test
+   ```
+
+5. **Test your application** at the CloudFront URL
+
+**Note:** First CloudFront deployment takes ~5-10 minutes.
+
+### Deploy to Production
+
+1. **Ensure `config/prod.json` is configured** with production secrets
+
+2. **Deploy** (requires confirmation for safety):
+   ```bash
+   npm run deploy:prod
+   ```
+
+3. **Update frontend config** with production endpoints
+
+4. **Redeploy**:
+   ```bash
+   npm run deploy:prod
+   ```
+
+5. **Test thoroughly** before sharing with users
 
 ## Deployment Outputs
 
-After running `npm run deploy`, you'll see four important URLs:
+After running `npm run deploy:test` or `npm run deploy:prod`, you'll see:
 
-1. **ApiUrl**: Your API Gateway base URL
-2. **MultiplyEndpoint**: Your complete API endpoint (use this in config.js)
-3. **WebsiteUrl**: Your HTTPS frontend website URL (share this with users)
-4. **CloudFrontDomain**: Your CloudFront distribution domain
+1. **Environment**: Which environment was deployed (test/prod)
+2. **ApiUrl**: Your API Gateway base URL
+3. **MultiplyEndpoint**: Complete API endpoint → update in `public/config.js`
+4. **WebsiteUrl**: Your HTTPS frontend URL → share with users
+5. **CloudFrontDomain**: CloudFront domain → update in `public/config.js`
 
 ## CloudFront Benefits
 
@@ -139,17 +187,17 @@ If you make changes to the frontend files (HTML, CSS, or JavaScript):
 
 ## Cleanup
 
-To remove all AWS resources (frontend + backend):
+Remove AWS resources for a specific environment:
 
 ```bash
-npm run destroy
+# Destroy test environment
+npm run destroy:test
+
+# Destroy production environment (use with caution!)
+npm run destroy:prod
 ```
 
-This will:
-- Delete the S3 bucket and all frontend files
-- Remove the Lambda function
-- Delete the API Gateway
-- Clean up all associated resources
+This will delete all resources including S3 bucket, Lambda, API Gateway, and CloudFront distribution.
 
 ## Cost
 
@@ -160,26 +208,12 @@ Both frontend and backend use AWS Free Tier eligible services:
 
 After Free Tier, costs are minimal for low traffic (~$0.50/month for typical usage).
 
-## Next Steps
+## Related Documentation
 
-### Production Enhancements (Optional)
-
-1. **Custom Domain**: Set up a custom domain with Route53
-2. **HTTPS**: Add CloudFront for HTTPS support
-3. **Caching**: Enable CloudFront caching for better performance
-4. **Authentication**: Add API key or Cognito authentication
-5. **Monitoring**: Set up CloudWatch alarms and dashboards
-
-### Local Development
-
-You can also test the frontend locally:
-
-1. Update `public/config.js` with your deployed API endpoint
-2. Open `public/index.html` directly in your browser
-3. Or use a local server:
-   ```bash
-   npx http-server public
-   ```
+- **[ENVIRONMENTS.md](ENVIRONMENTS.md)** - Complete environment setup guide
+- **[LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md)** - Local debugging guide
+- **[README.md](README.md)** - Project overview
+- **[RATE-LIMITING.md](RATE-LIMITING.md)** - API throttling details
 
 ## Support
 

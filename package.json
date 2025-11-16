@@ -7,9 +7,19 @@
     "cdk": "cdk",
     "bootstrap": "cdk bootstrap",
     "deploy": "cdk deploy",
+    "deploy:test": "cross-env DEPLOY_ENV=test cdk deploy --require-approval never",
+    "deploy:prod": "cross-env DEPLOY_ENV=prod cdk deploy --require-approval broadening",
     "destroy": "cdk destroy",
+    "destroy:test": "cross-env DEPLOY_ENV=test cdk destroy",
+    "destroy:prod": "cross-env DEPLOY_ENV=prod cdk destroy",
     "synth": "cdk synth",
-    "test": "node test-local.js"
+    "test": "node test-local.js",
+    "test:watch": "nodemon --watch src test-local.js",
+    "dev": "live-server public --port=8080 --no-browser",
+    "dev:open": "live-server public --port=8080",
+    "backend": "node local-server.js",
+    "debug": "node --inspect-brk local-server.js",
+    "local": "concurrently \"npm run backend\" \"npm run dev:open\""
   },
   "keywords": ["lambda", "api", "aws"],
   "author": "",
@@ -19,6 +29,15 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
-    "aws-cdk": "^2.120.0"
+    "aws-cdk": "^2.120.0",
+    "live-server": "^1.2.2",
+    "nodemon": "^3.0.1",
+    "concurrently": "^8.2.1",
+    "cross-env": "^7.0.3"
+  },
+  "optionalDependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
   }
 }
