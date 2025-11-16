@@ -1,0 +1,44 @@
+{
+  "environment": "production",
+  "stackName": "MultiplyStack-Prod",
+  "description": "Production environment - LIVE deployment",
+  "aws": {
+    "region": "us-west-2",
+    "account": "145023121294"
+  },
+  "lambda": {
+    "memorySize": 128,
+    "timeout": 10,
+    "reservedConcurrency": null
+  },
+  "apiGateway": {
+    "throttling": {
+      "rateLimit": 100,
+      "burstLimit": 200
+    },
+    "methodThrottling": {
+      "rateLimit": 10,
+      "burstLimit": 20
+    }
+  },
+  "cloudfront": {
+    "priceClass": "PriceClass_All",
+    "comment": "Production - Multiply Service"
+  },
+  "features": {
+    "debugMode": false,
+    "verboseLogging": false
+  },
+  "secrets": {
+    "stripe": {
+      "publicKey": "pk_live_YOUR_KEY_HERE",
+      "secretKey": "sk_live_YOUR_KEY_HERE",
+      "note": "NEVER commit this file with real keys!"
+    },
+    "memberstack": {
+      "publicKey": "pk_live_YOUR_KEY_HERE",
+      "secretKey": "ms_live_YOUR_KEY_HERE",
+      "note": "NEVER commit this file with real keys!"
+    }
+  }
+}

@@ -1,15 +1,31 @@
 #!/usr/bin/env node
 const cdk = require('aws-cdk-lib');
 const { MultiplyStack } = require('../lib/multiply-stack');
+const fs = require('fs');
+const path = require('path');
 
 const app = new cdk.App();
 
-new MultiplyStack(app, 'MultiplyServiceStack', {
+// Load environment-specific configuration
+const deployEnv = process.env.DEPLOY_ENV || 'test';
+const configPath = path.join(__dirname, `../config/${deployEnv}.json`);
+
+if (!fs.existsSync(configPath)) {
+  console.error(`❌ Config file not found: ${configPath}`);
+  console.error(`   Available environments: local, test, prod`);
+  console.error(`   Set DEPLOY_ENV environment variable or create the config file.`);
+  process.exit(1);
+}
+
+const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
+// Create stack with environment-specific name
+new MultiplyStack(app, config.stackName, {
   env: {
-    account: process.env.CDK_DEFAULT_ACCOUNT,
-    region: process.env.CDK_DEFAULT_REGION || 'us-east-1'
+    account: process.env.CDK_DEFAULT_ACCOUNT || config.aws?.account,
+    region: process.env.CDK_DEFAULT_REGION || config.aws?.region || 'us-west-2'
   },
-  description: 'Stack for the multiply by 2 service'
+  description: `${config.description} - Deployed via CDK`
 });
 
 app.synth();

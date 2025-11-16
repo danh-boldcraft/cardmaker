@@ -17,10 +17,13 @@ A simple serverless application that multiplies a number by 3, featuring a web f
 - ✅ **Rate Limiting** - API throttling (10 requests/sec) to prevent abuse
 - ✅ **Serverless** - Auto-scaling, pay-per-use infrastructure
 - ✅ **Modern UI** - Clean, responsive web interface
+- ✅ **Multi-Environment** - Separate local, test, and production environments
 
 ## Quick Start
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for complete frontend deployment instructions.
+- **Local Development**: See [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md)
+- **Environment Setup**: See [ENVIRONMENTS.md](ENVIRONMENTS.md)
+- **Deployment**: See [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ## Prerequisites
 
@@ -53,31 +56,39 @@ Before you begin, ensure you have the following installed:
    npm run bootstrap
    ```
 
-## Local Testing
+## Local Development
 
-Test the Lambda function locally before deploying:
+Run the complete application locally (frontend + backend):
 
 ```bash
-npm test
+npm run local
 ```
 
-This will run several test cases to verify the function works correctly.
+This starts both the frontend (localhost:8080) and backend (localhost:3001).
+
+For detailed debugging instructions, see [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md).
 
 ## Deployment
 
-Deploy the service to AWS:
+This project supports three environments:
+
+- **Local**: Development on your machine (no AWS deployment)
+- **Test**: AWS deployment for testing
+- **Production**: Live AWS deployment
+
+### Deploy to Test Environment
 
 ```bash
-npm run deploy
+npm run deploy:test
 ```
 
-The deployment process will:
-1. Package the Lambda function
-2. Create the CloudFormation stack
-3. Deploy Lambda and API Gateway
-4. Output the API endpoint URL
+### Deploy to Production
 
-Save the API endpoint URL from the output - you'll need it to make requests.
+```bash
+npm run deploy:prod
+```
+
+For complete environment setup and deployment instructions, see [ENVIRONMENTS.md](ENVIRONMENTS.md).
 
 ## Usage
 
@@ -164,11 +175,24 @@ curl -X POST YOUR_ENDPOINT/multiply -H "Content-Type: application/json" -d '{}'
 
 ## Available Scripts
 
-- `npm run deploy` - Deploy the stack to AWS
-- `npm run destroy` - Remove the stack from AWS
-- `npm run synth` - Synthesize CloudFormation template
+### Local Development
+- `npm run local` - Start frontend and backend locally
+- `npm run dev` - Start frontend only (localhost:8080)
+- `npm run backend` - Start backend only (localhost:3001)
+- `npm run debug` - Start backend with debugger
+
+### Testing
 - `npm test` - Run local tests
+
+### Deployment
+- `npm run deploy:test` - Deploy to test environment
+- `npm run deploy:prod` - Deploy to production environment
+- `npm run destroy:test` - Destroy test environment
+- `npm run destroy:prod` - Destroy production environment
+
+### CDK
 - `npm run bootstrap` - Bootstrap CDK (one-time setup)
+- `npm run synth` - Synthesize CloudFormation template
 
 ## Cleanup
 
@@ -195,6 +219,8 @@ After Free Tier limits, costs are minimal for low usage (~$0.20 per 1M requests)
 
 ### "User is not authorized to perform: cloudformation:CreateStack"
 - Ensure your AWS user has appropriate permissions (AdministratorAccess or CloudFormation/Lambda/APIGateway permissions)
+
+### Claude is great
 
 ### "Endpoint returns 403 Forbidden"
 - Check that your API was deployed successfully

@@ -1,0 +1,44 @@
+{
+  "environment": "test",
+  "stackName": "MultiplyStack-Test",
+  "description": "Test environment - AWS deployment for testing",
+  "aws": {
+    "region": "us-west-2",
+    "account": "145023121294"
+  },
+  "lambda": {
+    "memorySize": 128,
+    "timeout": 10,
+    "reservedConcurrency": null
+  },
+  "apiGateway": {
+    "throttling": {
+      "rateLimit": 100,
+      "burstLimit": 200
+    },
+    "methodThrottling": {
+      "rateLimit": 10,
+      "burstLimit": 20
+    }
+  },
+  "cloudfront": {
+    "priceClass": "PriceClass_100",
+    "comment": "Test environment - Multiply Service"
+  },
+  "features": {
+    "debugMode": true,
+    "verboseLogging": true
+  },
+  "secrets": {
+    "stripe": {
+      "publicKey": "pk_test_PLACEHOLDER",
+      "secretKey": "sk_test_PLACEHOLDER",
+      "note": "Use Stripe test keys here - safe to commit"
+    },
+    "memberstack": {
+      "publicKey": "pk_test_PLACEHOLDER",
+      "secretKey": "ms_test_PLACEHOLDER",
+      "note": "Use Memberstack test keys here - safe to commit"
+    }
+  }
+}
