@@ -233,3 +233,7 @@ After Free Tier limits, costs are minimal for low usage (~$0.20 per 1M requests)
 ## License
 
 ISC
+
+## Note
+
+Claude is so much better than cursor
