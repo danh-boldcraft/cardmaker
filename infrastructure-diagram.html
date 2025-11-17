@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infrastructure Diagram - Claude Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .diagram-container {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+        }
+        .info-panel {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            margin-top: 30px;
+        }
+        .info-panel h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .env-section {
+            margin: 15px 0;
+        }
+        .env-section h3 {
+            color: #ff9900;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+        .env-section ul {
+            margin: 5px 0;
+            padding-left: 20px;
+        }
+        .env-section li {
+            margin: 5px 0;
+            color: #555;
+        }
+        .download-btn {
+            background: #ff9900;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        .download-btn:hover {
+            background: #e68a00;
+        }
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Infrastructure Diagram</h1>
+        <p class="subtitle">Multi-Environment Architecture: Local, Test, and Production</p>
+
+        <div class="diagram-container">
+            <div class="mermaid">
+graph TB
+    subgraph Local["🏠 Local Development"]
+        LocalBrowser[🌐 Browser<br/>localhost:8080]
+        LocalFrontend[📁 Static Files<br/>public/]
+        LocalBackend[⚡ Local Server<br/>:3001]
+        LocalBrowser -->|HTTP| LocalFrontend
+        LocalBrowser -->|API Call| LocalBackend
+    end
+
+    subgraph Test["🧪 AWS Test Environment"]
+        TestUser[👤 User Browser]
+        TestCF[☁️ CloudFront<br/>du85n5akt8cz3<br/>.cloudfront.net]
+        TestS3[🪣 S3 Bucket<br/>Website Files]
+        TestAPI[🔌 API Gateway<br/>irvyesnnzj...<br/>amazonaws.com]
+        TestLambda[λ Lambda<br/>multiply-handler]
+
+        TestUser -->|HTTPS| TestCF
+        TestCF -->|Origin| TestS3
+        TestUser -->|API Call| TestAPI
+        TestAPI -->|Invoke| TestLambda
+    end
+
+    subgraph Prod["🚀 AWS Production Environment"]
+        ProdUser[👤 User Browser]
+        ProdCF[☁️ CloudFront<br/>d2rg9tky4q7r5f<br/>.cloudfront.net]
+        ProdS3[🪣 S3 Bucket<br/>Website Files]
+        ProdAPI[🔌 API Gateway<br/>m839o2ac1c...<br/>amazonaws.com]
+        ProdLambda[λ Lambda<br/>multiply-handler]
+
+        ProdUser -->|HTTPS| ProdCF
+        ProdCF -->|Origin| ProdS3
+        ProdUser -->|API Call| ProdAPI
+        ProdAPI -->|Invoke| ProdLambda
+    end
+
+    subgraph Deploy["📦 Deployment Pipeline"]
+        CDK[🔧 AWS CDK]
+        Code[💻 Source Code<br/>public/config.js]
+
+        CDK -.->|Deploy Test| TestCF
+        CDK -.->|Deploy Test| TestS3
+        CDK -.->|Deploy Test| TestAPI
+        CDK -.->|Deploy Test| TestLambda
+
+        CDK -.->|Deploy Prod| ProdCF
+        CDK -.->|Deploy Prod| ProdS3
+        CDK -.->|Deploy Prod| ProdAPI
+        CDK -.->|Deploy Prod| ProdLambda
+
+        Code -.->|Bundled| TestS3
+        Code -.->|Bundled| ProdS3
+    end
+
+    linkStyle 8,9,10,11,12,13,14,15,16,17 stroke:#999,stroke-width:2px
+
+    style LocalBrowser fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    style TestUser fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    style ProdUser fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    style TestCF fill:#ff9900,stroke:#cc7a00,stroke-width:2px,color:#000
+    style ProdCF fill:#ff9900,stroke:#cc7a00,stroke-width:2px,color:#000
+    style TestS3 fill:#569a31,stroke:#447a26,stroke-width:2px,color:#000
+    style ProdS3 fill:#569a31,stroke:#447a26,stroke-width:2px,color:#000
+    style TestAPI fill:#ff4f00,stroke:#cc3f00,stroke-width:2px,color:#000
+    style ProdAPI fill:#ff4f00,stroke:#cc3f00,stroke-width:2px,color:#000
+    style TestLambda fill:#ff9900,stroke:#cc7a00,stroke-width:2px,color:#000
+    style ProdLambda fill:#ff9900,stroke:#cc7a00,stroke-width:2px,color:#000
+    style CDK fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    style Code fill:#f0f0f0,stroke:#666,stroke-width:2px
+    style LocalFrontend fill:#f0f0f0,stroke:#666,stroke-width:2px
+    style LocalBackend fill:#f0f0f0,stroke:#666,stroke-width:2px
+    style Local fill:#f9f9f9,stroke:#999,stroke-width:2px
+    style Test fill:#fff5e6,stroke:#ff9900,stroke-width:2px
+    style Prod fill:#e6f7ff,stroke:#0066cc,stroke-width:2px
+    style Deploy fill:#f0f0f0,stroke:#666,stroke-width:2px
+            </div>
+        </div>
+
+        <button class="download-btn" onclick="downloadDiagram()">💾 Download as SVG</button>
+
+        <div class="info-panel">
+            <h2>Environment Details</h2>
+
+            <div class="env-section">
+                <h3>🏠 Local Development</h3>
+                <ul>
+                    <li><strong>Frontend:</strong> <code>http://localhost:8080</code></li>
+                    <li><strong>Backend:</strong> <code>http://localhost:3001/multiply</code></li>
+                </ul>
+            </div>
+
+            <div class="env-section">
+                <h3>🧪 Test Environment</h3>
+                <ul>
+                    <li><strong>Website:</strong> <code>https://du85n5akt8cz3.cloudfront.net</code></li>
+                    <li><strong>API:</strong> <code>https://irvyesnnzj.execute-api.us-west-2.amazonaws.com/prod/multiply</code></li>
+                </ul>
+            </div>
+
+            <div class="env-section">
+                <h3>🚀 Production Environment</h3>
+                <ul>
+                    <li><strong>Website:</strong> <code>https://d2rg9tky4q7r5f.cloudfront.net</code></li>
+                    <li><strong>API:</strong> <code>https://m839o2ac1c.execute-api.us-west-2.amazonaws.com/prod/multiply</code></li>
+                </ul>
+            </div>
+
+            <div class="env-section">
+                <h3>🎯 Smart Routing</h3>
+                <ul>
+                    <li>Frontend auto-detects environment based on hostname</li>
+                    <li>Configuration in <code>public/config.js</code></li>
+                    <li>Routes API calls to appropriate backend automatically</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            }
+        });
+
+        function downloadDiagram() {
+            const svg = document.querySelector('.mermaid svg');
+            if (!svg) {
+                alert('Please wait for the diagram to render first!');
+                return;
+            }
+
+            const svgData = new XMLSerializer().serializeToString(svg);
+            const blob = new Blob([svgData], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'infrastructure-diagram.svg';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
