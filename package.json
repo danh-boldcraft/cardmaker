@@ -8,7 +8,7 @@
     "bootstrap": "cdk bootstrap",
     "deploy": "cdk deploy",
     "deploy:test": "cross-env DEPLOY_ENV=test cdk deploy --require-approval never",
-    "deploy:prod": "cross-env DEPLOY_ENV=prod cdk deploy --require-approval broadening",
+    "deploy:prod": "cross-env DEPLOY_ENV=prod cdk deploy --require-approval never",
     "destroy": "cdk destroy",
     "destroy:test": "cross-env DEPLOY_ENV=test cdk destroy",
     "destroy:prod": "cross-env DEPLOY_ENV=prod cdk destroy",

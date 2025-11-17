@@ -16,13 +16,13 @@
 const API_ENDPOINTS = {
   local: 'http://localhost:3001/multiply',
   test: 'https://irvyesnnzj.execute-api.us-west-2.amazonaws.com/prod/multiply',  // Test environment
-  prod: 'https://usyl5zha62.execute-api.us-west-2.amazonaws.com/prod/multiply'  // Production environment
+  prod: 'https://m839o2ac1c.execute-api.us-west-2.amazonaws.com/prod/multiply'  // Production environment
 };
 
 // CloudFront domain mappings (to detect environment)
 const CLOUDFRONT_DOMAINS = {
   test: 'du85n5akt8cz3.cloudfront.net',  // Test environment CloudFront
-  prod: 'd2ohaeiivgnrqq.cloudfront.net'  // Production environment CloudFront
+  prod: 'd2rg9tky4q7r5f.cloudfront.net'  // Production environment CloudFront
 };
 
 /**
