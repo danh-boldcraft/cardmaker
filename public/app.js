@@ -115,9 +115,18 @@ numberInput.addEventListener('focus', () => {
     hideError();
 });
 
-// Validate API configuration on page load
+// Display environment banner and validate configuration on page load
 window.addEventListener('DOMContentLoaded', () => {
-    if (API_CONFIG.endpoint.includes('YOUR_API_ENDPOINT_HERE')) {
+    // Display environment banner
+    const environmentBanner = document.getElementById('environmentBanner');
+    const environmentLabel = document.getElementById('environmentLabel');
+    const environment = API_CONFIG.environment.toUpperCase();
+
+    environmentLabel.textContent = `🔷 ${environment} ENVIRONMENT`;
+    environmentBanner.classList.add(API_CONFIG.environment);
+
+    // Validate API configuration
+    if (API_CONFIG.endpoint.includes('REPLACE_WITH') || API_CONFIG.endpoint.includes('YOUR_API_ENDPOINT_HERE')) {
         showError('⚠️ API endpoint not configured! Please update the endpoint in config.js with your actual API Gateway URL.');
         submitBtn.disabled = true;
     }

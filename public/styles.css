@@ -4,6 +4,27 @@
     box-sizing: border-box;
 }
 
+.environment-banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.95rem;
+    z-index: 1000;
+    color: white;
+}
+
+.environment-banner.test {
+    background-color: #f59e0b;
+}
+
+.environment-banner.prod {
+    background-color: #ef4444;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -12,6 +33,7 @@ body {
     justify-content: center;
     align-items: center;
     padding: 20px;
+    padding-top: 70px;
     color: #333;
 }
 

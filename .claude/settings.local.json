@@ -5,7 +5,10 @@
       "Bash(npm test)",
       "Bash(npx cdk deploy:*)",
       "Bash(curl:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(npm run deploy:test:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
