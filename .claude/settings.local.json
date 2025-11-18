@@ -9,7 +9,9 @@
       "Bash(npm run deploy:test:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(fd:*)"
+      "Bash(fd:*)",
+      "Bash(rg:*)",
+      "Bash(ls:*)",
     ],
     "deny": [],
     "ask": []
