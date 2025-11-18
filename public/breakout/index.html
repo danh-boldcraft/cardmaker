@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakout Game</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="game.css">
+</head>
+<body>
+    <div id="environmentBanner" class="environment-banner">
+        <span id="environmentLabel"></span>
+    </div>
+
+    <div class="container">
+        <div class="game-card">
+            <div class="game-header">
+                <h1>Breakout</h1>
+                <div class="nav-links">
+                    <a href="../index.html" class="nav-link">Back to Home</a>
+                </div>
+            </div>
+
+            <div class="game-stats">
+                <div class="stat">
+                    <span class="stat-label">Score:</span>
+                    <span id="score" class="stat-value">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Lives:</span>
+                    <span id="lives" class="stat-value">3</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Level:</span>
+                    <span id="level" class="stat-value">1</span>
+                </div>
+            </div>
+
+            <div class="game-container">
+                <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+                <div id="gameOverlay" class="game-overlay hidden">
+                    <div class="overlay-content">
+                        <h2 id="overlayTitle"></h2>
+                        <p id="overlayMessage"></p>
+                        <div id="finalScore" class="final-score hidden"></div>
+                        <button id="restartBtn" class="game-btn">Start New Game</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-controls">
+                <p><strong>Controls:</strong> Move your mouse or use Arrow Keys (← →) to control the paddle</p>
+                <p><strong>Goal:</strong> Break all the bricks without letting the ball fall!</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Powered by AWS Lambda + API Gateway</p>
+        </div>
+    </div>
+
+    <script src="../config.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
