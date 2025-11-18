@@ -1,0 +1,1 @@
+Reload @CLAUDE.md - particularly use rg/fd instead of grep/find
