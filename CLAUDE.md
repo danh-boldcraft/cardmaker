@@ -62,6 +62,8 @@ npm test                   # Run Lambda unit tests
 
 ### Environment Configuration
 - Prefer configuration via environment variables vs AWS secrets manager
+- Add checks for required environment variables in code to early-out if possible and log the error if possible.
+- All environment variables should start with "CT_" so they show up together when listed
 - Configs stored in `config/{env}.json`
 - `DEPLOY_ENV` env var selects environment (default: test)
 - Frontend auto-detects environment by hostname
