@@ -21,7 +21,11 @@
     "debug": "node --inspect-brk local-server.js",
     "local": "concurrently \"npm run backend\" \"npm run dev:open\""
   },
-  "keywords": ["lambda", "api", "aws"],
+  "keywords": [
+    "lambda",
+    "api",
+    "aws"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
@@ -30,14 +34,14 @@
   },
   "devDependencies": {
     "aws-cdk": "^2.120.0",
-    "live-server": "^1.2.2",
-    "nodemon": "^3.0.1",
     "concurrently": "^8.2.1",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "live-server": "^1.2.2",
+    "nodemon": "^3.0.1"
   },
   "optionalDependencies": {
-    "express": "^4.18.2",
     "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2"
   }
 }

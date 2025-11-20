@@ -51,7 +51,16 @@ Before you begin, ensure you have the following installed:
    npm install
    ```
 
-2. Bootstrap your AWS account for CDK (only needed once per account/region):
+2. Set up environment variables for local development:
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+
+   # Edit .env and add your API keys (Stripe, Memberstack, etc.)
+   # See .env.example for required variables
+   ```
+
+3. Bootstrap your AWS account for CDK (only needed once per account/region):
    ```bash
    npm run bootstrap
    ```
@@ -68,6 +77,22 @@ This starts both the frontend (localhost:8080) and backend (localhost:3001).
 
 For detailed debugging instructions, see [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md).
 
+## Secrets Management
+
+This project uses environment variables for all secrets (API keys, tokens, etc.):
+
+- **Local Development**: Secrets are loaded from `.env` file (gitignored)
+- **AWS Deployment**: Secrets are passed via environment variables to Lambda
+- **No secrets in config files**: All config files are safe to commit
+
+### Setting Up Secrets
+
+1. Copy `.env.example` to `.env`
+2. Fill in your test API keys in `.env`
+3. Never commit the `.env` file (it's in `.gitignore`)
+
+See [.env.example](.env.example) for required variables.
+
 ## Deployment
 
 This project supports three environments:
@@ -79,14 +104,22 @@ This project supports three environments:
 ### Deploy to Test Environment
 
 ```bash
+# Set environment variables before deploying
+export MEMBERSTACK_SECRET_KEY="ms_test_..."
+
 npm run deploy:test
 ```
 
 ### Deploy to Production
 
 ```bash
+# Set environment variables with PRODUCTION keys before deploying
+export MEMBERSTACK_SECRET_KEY="ms_live_..."
+
 npm run deploy:prod
 ```
+
+**Note**: Environment variables must be set in your shell before deploying. These secrets are passed to the Lambda function and are not stored in config files.
 
 For complete environment setup and deployment instructions, see [ENVIRONMENTS.md](ENVIRONMENTS.md).
 

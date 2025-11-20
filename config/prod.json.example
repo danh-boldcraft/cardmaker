@@ -30,15 +30,6 @@
     "verboseLogging": false
   },
   "secrets": {
-    "stripe": {
-      "publicKey": "pk_live_YOUR_KEY_HERE",
-      "secretKey": "sk_live_YOUR_KEY_HERE",
-      "note": "NEVER commit this file with real keys!"
-    },
-    "memberstack": {
-      "publicKey": "pk_live_YOUR_KEY_HERE",
-      "secretKey": "ms_live_YOUR_KEY_HERE",
-      "note": "NEVER commit this file with real keys!"
-    }
+    "note": "Secrets are loaded from environment variables - set before deployment"
   }
 }

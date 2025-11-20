@@ -8,6 +8,9 @@
  *   npm run local      - Start both backend and frontend
  */
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 const http = require('http');
 const url = require('url');
 const { handler } = require('./src/lambda/handler');

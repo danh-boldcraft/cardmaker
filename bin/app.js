@@ -1,4 +1,7 @@
 #!/usr/bin/env node
+
+// This file is used for deployment.
+// npm scripts set DEPLOY_ENV. CDK auto-detects AWS account/region from your AWS CLI config.
 const cdk = require('aws-cdk-lib');
 const { MultiplyStack } = require('../lib/multiply-stack');
 const fs = require('fs');
