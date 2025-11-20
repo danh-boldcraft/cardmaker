@@ -2,159 +2,63 @@
 
 A simple serverless application that multiplies a number by 3, featuring a web frontend and backend API deployed on AWS.
 
-## Architecture
-
-- **Frontend**: Static website hosted on AWS S3, distributed via CloudFront with HTTPS
-- **Backend**: AWS Lambda function that performs the multiplication
-- **API Gateway**: REST API endpoint to access the service
-- **CDN**: CloudFront for global distribution, caching, and HTTPS encryption
-- **AWS CDK**: Infrastructure as Code for deployment
-
 ## Features
 
-- ✅ **Secure HTTPS** - SSL/TLS encryption for all frontend traffic
+- ✅ **Secure HTTPS** - SSL/TLS encryption for all frontend traffic via CloudFront
 - ✅ **Global CDN** - Fast loading from anywhere in the world
 - ✅ **Rate Limiting** - API throttling (10 requests/sec) to prevent abuse
 - ✅ **Serverless** - Auto-scaling, pay-per-use infrastructure
 - ✅ **Modern UI** - Clean, responsive web interface
 - ✅ **Multi-Environment** - Separate local, test, and production environments
 
+## Architecture
+
+- **Frontend**: Static website hosted on AWS S3, distributed via CloudFront with HTTPS
+- **Backend**: AWS Lambda function (Node.js 20.x) that performs the multiplication
+- **API Gateway**: REST API endpoint with CORS and rate limiting
+- **CDN**: CloudFront for global distribution, caching, and HTTPS encryption
+- **Infrastructure as Code**: AWS CDK for repeatable deployments
+
 ## Quick Start
 
-- **Local Development**: See [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md)
-- **Environment Setup**: See [ENVIRONMENTS.md](ENVIRONMENTS.md)
-- **Deployment**: See [DEPLOYMENT.md](DEPLOYMENT.md)
+### Prerequisites
 
-## Prerequisites
+- **Node.js** v18 or later ([nodejs.org](https://nodejs.org/))
+- **AWS CLI** configured with credentials ([AWS CLI setup](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html))
+- **AWS Account** with permissions for Lambda, API Gateway, S3, CloudFront
 
-Before you begin, ensure you have the following installed:
-
-1. **Node.js** (v18 or later)
-   - Download from [nodejs.org](https://nodejs.org/)
-
-2. **AWS CLI**
-   - Install: `npm install -g aws-cli`
-   - Configure with your credentials: `aws configure`
-   - You'll need:
-     - AWS Access Key ID
-     - AWS Secret Access Key
-     - Default region (e.g., us-east-1)
-
-3. **AWS Account**
-   - Create one at [aws.amazon.com](https://aws.amazon.com/) if you don't have one
-   - Ensure you have permissions to create Lambda functions, API Gateway, and IAM roles
-
-## Installation
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Set up environment variables for local development:
-   ```bash
-   # Copy the example file
-   cp .env.example .env
-
-   # Edit .env and add your API keys (Stripe, Memberstack, etc.)
-   # See .env.example for required variables
-   ```
-
-3. Bootstrap your AWS account for CDK (only needed once per account/region):
-   ```bash
-   npm run bootstrap
-   ```
-
-## Local Development
-
-Run the complete application locally (frontend + backend):
+### Installation
 
 ```bash
+# Install dependencies
+npm install
+
+# Set up environment variables
+cp .env.example .env
+# Edit .env and add your API keys (see .env.example for details)
+
+# Run locally
 npm run local
 ```
 
-This starts both the frontend (localhost:8080) and backend (localhost:3001).
+This starts the frontend at http://localhost:8080 and backend at http://localhost:3001.
 
-For detailed debugging instructions, see [LOCAL-DEVELOPMENT.md](LOCAL-DEVELOPMENT.md).
-
-## Secrets Management
-
-This project uses environment variables for all secrets (API keys, tokens, etc.):
-
-- **Local Development**: Secrets are loaded from `.env` file (gitignored)
-- **AWS Deployment**: Secrets are passed via environment variables to Lambda
-- **No secrets in config files**: All config files are safe to commit
-
-### Setting Up Secrets
-
-1. Copy `.env.example` to `.env`
-2. Fill in your test API keys in `.env`
-3. Never commit the `.env` file (it's in `.gitignore`)
-
-See [.env.example](.env.example) for required variables.
-
-## Deployment
-
-This project supports three environments:
-
-- **Local**: Development on your machine (no AWS deployment)
-- **Test**: AWS deployment for testing
-- **Production**: Live AWS deployment
-
-### Deploy to Test Environment
-
-```bash
-# Set environment variables before deploying
-export MEMBERSTACK_SECRET_KEY="ms_test_..."
-
-npm run deploy:test
-```
-
-### Deploy to Production
-
-```bash
-# Set environment variables with PRODUCTION keys before deploying
-export MEMBERSTACK_SECRET_KEY="ms_live_..."
-
-npm run deploy:prod
-```
-
-**Note**: Environment variables must be set in your shell before deploying. These secrets are passed to the Lambda function and are not stored in config files.
-
-For complete environment setup and deployment instructions, see [ENVIRONMENTS.md](ENVIRONMENTS.md).
+For detailed development and deployment instructions, see **[DEVELOPMENT.md](DEVELOPMENT.md)**.
 
 ## Usage
 
-Once deployed, you can call the API endpoint:
+### API Endpoint
 
-### Using curl (Command Line)
+**POST** `/multiply`
 
-```bash
-curl -X POST https://YOUR_API_ID.execute-api.REGION.amazonaws.com/prod/multiply \
-  -H "Content-Type: application/json" \
-  -d '{"number": 5}'
-```
-
-### Using PowerShell (Windows)
-
-```powershell
-Invoke-RestMethod -Uri "https://YOUR_API_ID.execute-api.REGION.amazonaws.com/prod/multiply" `
-  -Method POST `
-  -Headers @{"Content-Type"="application/json"} `
-  -Body '{"number": 5}'
-```
-
-### Request Format
-
+**Request:**
 ```json
 {
   "number": 5
 }
 ```
 
-### Response Format
-
-Success response (200):
+**Response:**
 ```json
 {
   "input": 5,
@@ -162,32 +66,53 @@ Success response (200):
 }
 ```
 
-Error response (400):
+**Error Response:**
 ```json
 {
   "error": "Missing required field: number"
 }
 ```
 
-## Testing Examples
+### Examples
 
 ```bash
-# Multiply 5 by 3
-curl -X POST YOUR_ENDPOINT/multiply -H "Content-Type: application/json" -d '{"number": 5}'
-# Response: {"input": 5, "result": 15}
+# Using curl
+curl -X POST YOUR_API_ENDPOINT/multiply \
+  -H "Content-Type: application/json" \
+  -d '{"number": 5}'
 
-# Multiply negative number
-curl -X POST YOUR_ENDPOINT/multiply -H "Content-Type: application/json" -d '{"number": -3}'
-# Response: {"input": -3, "result": -9}
-
-# Multiply decimal
-curl -X POST YOUR_ENDPOINT/multiply -H "Content-Type: application/json" -d '{"number": 7.5}'
-# Response: {"input": 7.5, "result": 22.5}
-
-# Error - missing number
-curl -X POST YOUR_ENDPOINT/multiply -H "Content-Type: application/json" -d '{}'
-# Response: {"error": "Missing required field: number"}
+# Using PowerShell
+Invoke-RestMethod -Uri "YOUR_API_ENDPOINT/multiply" `
+  -Method POST `
+  -Headers @{"Content-Type"="application/json"} `
+  -Body '{"number": 5}'
 ```
+
+## Available Scripts
+
+### Local Development
+- `npm run local` - Run frontend and backend locally
+- `npm run dev` - Start frontend only (localhost:8080)
+- `npm run backend` - Start backend only (localhost:3001)
+- `npm test` - Run unit tests
+
+### Deployment
+- `npm run deploy:test` - Deploy to test environment
+- `npm run deploy:prod` - Deploy to production environment
+- `npm run bootstrap` - Bootstrap CDK (one-time setup)
+
+See [DEVELOPMENT.md](DEVELOPMENT.md) for complete documentation.
+
+## Environment Variables
+
+All user-configurable environment variables use the `CT_` prefix:
+
+- `CT_MEMBERSTACK_PUBLIC_KEY` - Memberstack public API key (required)
+- `CT_MEMBERSTACK_SECRET_KEY` - Memberstack secret API key (required)
+- `CT_PORT` - Local backend port (optional, default: 3001)
+- `CT_HOST` - Local backend host (optional, default: localhost)
+
+Copy `.env.example` to `.env` and fill in your values.
 
 ## Project Structure
 
@@ -196,77 +121,64 @@ curl -X POST YOUR_ENDPOINT/multiply -H "Content-Type: application/json" -d '{}'
 ├── bin/
 │   └── app.js              # CDK app entry point
 ├── lib/
-│   └── multiply-stack.js   # CDK stack definition
+│   └── multiply-stack.js   # CDK stack definition (infrastructure)
 ├── src/
 │   └── lambda/
 │       └── handler.js      # Lambda function code
-├── cdk.json                # CDK configuration
-├── package.json            # Node.js dependencies
-├── test-local.js           # Local testing script
-└── README.md               # This file
+├── public/                 # Frontend files
+│   ├── index.html          # Main page
+│   ├── app.js              # Frontend logic
+│   ├── config.js           # Environment detection
+│   └── styles.css          # Styling
+├── config/                 # Environment configs (local, test, prod)
+├── local-server.js         # Local backend simulator
+├── test-local.js           # Unit tests
+├── package.json            # Dependencies and scripts
+├── README.md               # This file
+└── DEVELOPMENT.md          # Development and deployment guide
 ```
-
-## Available Scripts
-
-### Local Development
-- `npm run local` - Start frontend and backend locally
-- `npm run dev` - Start frontend only (localhost:8080)
-- `npm run backend` - Start backend only (localhost:3001)
-- `npm run debug` - Start backend with debugger
-
-### Testing
-- `npm test` - Run local tests
-
-### Deployment
-- `npm run deploy:test` - Deploy to test environment
-- `npm run deploy:prod` - Deploy to production environment
-- `npm run destroy:test` - Destroy test environment
-- `npm run destroy:prod` - Destroy production environment
-
-### CDK
-- `npm run bootstrap` - Bootstrap CDK (one-time setup)
-- `npm run synth` - Synthesize CloudFormation template
-
-## Cleanup
-
-To remove all AWS resources and avoid ongoing charges:
-
-```bash
-npm run destroy
-```
-
-Confirm the deletion when prompted.
 
 ## Cost
 
 This service uses AWS Free Tier eligible services:
-- **Lambda**: 1M free requests per month, 400,000 GB-seconds of compute
-- **API Gateway**: 1M free API calls per month for 12 months
 
-After Free Tier limits, costs are minimal for low usage (~$0.20 per 1M requests).
+- **Lambda**: 1M free requests/month, 400,000 GB-seconds of compute
+- **API Gateway**: 1M free API calls/month (first 12 months)
+- **S3**: 5GB storage, 20,000 GET requests/month
+- **CloudFront**: 1TB data transfer, 10M requests/month
+
+After Free Tier limits, costs are minimal for low usage (~$0.50/month for typical usage).
+
+## Documentation
+
+- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Complete development and deployment guide
+- **[.env.example](.env.example)** - Environment variable reference
 
 ## Troubleshooting
 
-### "Unable to resolve AWS account to use"
+### Common Issues
+
+**"Unable to resolve AWS account"**
 - Run `aws configure` to set up your AWS credentials
 
-### "User is not authorized to perform: cloudformation:CreateStack"
-- Ensure your AWS user has appropriate permissions (AdministratorAccess or CloudFormation/Lambda/APIGateway permissions)
+**"Port 3001 already in use"**
+- Use a different port: `CT_PORT=3002 npm run backend`
+- Or kill the process using port 3001
 
-### Claude is great
+**"Missing required environment variables"**
+- Ensure you've set `CT_MEMBERSTACK_PUBLIC_KEY` and `CT_MEMBERSTACK_SECRET_KEY` in your environment
 
-### "Endpoint returns 403 Forbidden"
-- Check that your API was deployed successfully
-- Verify you're using the correct endpoint URL from the deployment output
+See [DEVELOPMENT.md](DEVELOPMENT.md) for more troubleshooting help.
 
-### "Test fails locally"
-- Ensure Node.js is installed: `node --version`
-- Check that dependencies are installed: `npm install`
+## Cleanup
+
+Remove AWS resources to avoid charges:
+
+```bash
+npm run destroy:test   # Remove test environment
+npm run destroy:prod   # Remove production environment
+```
 
 ## License
 
 ISC
-
-## Note
-
-Claude is so much better than cursor
