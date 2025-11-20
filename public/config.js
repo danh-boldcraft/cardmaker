@@ -19,6 +19,12 @@ const API_ENDPOINTS = {
   prod: 'https://m839o2ac1c.execute-api.us-west-2.amazonaws.com/prod/multiply'  // Production environment
 };
 
+// Note: Memberstack app ID is configured via data-memberstack-app attribute in index.html
+// The same Memberstack app is used across all environments (local, test, prod)
+// If you need different Memberstack apps per environment, you'll need to:
+// 1. Create separate HTML files, or
+// 2. Dynamically inject the Memberstack script tag based on environment
+
 // CloudFront domain mappings (to detect environment)
 const CLOUDFRONT_DOMAINS = {
   test: 'du85n5akt8cz3.cloudfront.net',  // Test environment CloudFront

@@ -11,7 +11,10 @@
       "Bash(git commit:*)",
       "Bash(fd:*)",
       "Bash(rg:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(git checkout:*)",
+      "WebSearch",
+      "WebFetch(domain:developers.memberstack.com)"
     ],
     "deny": [],
     "ask": []

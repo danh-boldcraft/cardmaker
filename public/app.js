@@ -10,6 +10,18 @@ const calculation = document.getElementById('calculation');
 const errorDiv = document.getElementById('error');
 const errorMessage = document.getElementById('errorMessage');
 
+// Auth DOM Elements
+const loginBtn = document.getElementById('loginBtn');
+const signupBtn = document.getElementById('signupBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const loggedOutButtons = document.getElementById('loggedOutButtons');
+const loggedInButtons = document.getElementById('loggedInButtons');
+const userEmail = document.getElementById('userEmail');
+const proBanner = document.getElementById('proBanner');
+
+// Memberstack instance
+let memberstack = null;
+
 // Handle form submission
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -116,7 +128,7 @@ numberInput.addEventListener('focus', () => {
 });
 
 // Display environment banner and validate configuration on page load
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     // Display environment banner
     const environmentBanner = document.getElementById('environmentBanner');
     const environmentLabel = document.getElementById('environmentLabel');
@@ -130,4 +142,102 @@ window.addEventListener('DOMContentLoaded', () => {
         showError('⚠️ API endpoint not configured! Please update the endpoint in config.js with your actual API Gateway URL.');
         submitBtn.disabled = true;
     }
+
+    // Initialize Memberstack
+    await initMemberstack();
 });
+
+// Initialize Memberstack
+async function initMemberstack() {
+    try {
+        // Wait for Memberstack to be available (auto-initialized via data-memberstack-app attribute)
+        if (typeof window.$memberstackDom === 'undefined') {
+            console.error('Memberstack SDK not loaded');
+            return;
+        }
+
+        // Get the auto-initialized Memberstack instance
+        memberstack = window.$memberstackDom;
+
+        // Check current auth state
+        const member = await memberstack.getCurrentMember();
+        updateAuthUI(member.data);
+
+        // Wire up auth buttons
+        loginBtn.addEventListener('click', async () => {
+            try {
+                const result = await memberstack.openModal('LOGIN');
+                if (result.data) {
+                    updateAuthUI(result.data);
+                }
+            } catch (error) {
+                console.log('Login cancelled or failed:', error);
+            }
+        });
+
+        signupBtn.addEventListener('click', async () => {
+            try {
+                const result = await memberstack.openModal('SIGNUP');
+                if (result.data) {
+                    updateAuthUI(result.data);
+                }
+            } catch (error) {
+                console.log('Signup cancelled or failed:', error);
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            try {
+                await memberstack.logout();
+                updateAuthUI(null);
+                if (API_CONFIG.debug) {
+                    console.log('🚪 Logged out successfully');
+                }
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        });
+
+        // Listen for auth state changes
+        memberstack.onAuthChange((member) => {
+            updateAuthUI(member);
+        });
+
+        if (API_CONFIG.debug) {
+            console.log('🔐 Memberstack initialized');
+        }
+    } catch (error) {
+        console.error('Failed to initialize Memberstack:', error);
+    }
+}
+
+// Update UI based on auth state
+function updateAuthUI(member) {
+    if (member) {
+        // User is logged in
+        loggedOutButtons.classList.add('hidden');
+        loggedInButtons.classList.remove('hidden');
+        userEmail.textContent = member.auth.email;
+
+        // Check if user has Pro plan
+        const hasPro = member.planConnections &&
+            member.planConnections.some(plan => plan.planName === 'Pro' && plan.status === 'ACTIVE');
+
+        if (hasPro) {
+            proBanner.classList.remove('hidden');
+        } else {
+            proBanner.classList.add('hidden');
+        }
+
+        if (API_CONFIG.debug) {
+            console.log('👤 Logged in as:', member.auth.email);
+            console.log('📋 Plans:', member.planConnections);
+        }
+    } else {
+        // User is logged out
+        loggedOutButtons.classList.remove('hidden');
+        loggedInButtons.classList.add('hidden');
+        userEmail.textContent = '';
+        proBanner.classList.add('hidden');
+    }
+}
