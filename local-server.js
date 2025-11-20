@@ -15,8 +15,8 @@ const http = require('http');
 const url = require('url');
 const { handler } = require('./src/lambda/handler');
 
-const PORT = process.env.PORT || 3001;
-const HOST = process.env.HOST || 'localhost';
+const PORT = process.env.CT_PORT || process.env.PORT || 3001;
+const HOST = process.env.CT_HOST || process.env.HOST || 'localhost';
 
 /**
  * Create a simple HTTP server that simulates API Gateway
