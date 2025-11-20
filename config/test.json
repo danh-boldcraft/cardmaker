@@ -30,15 +30,6 @@
     "verboseLogging": true
   },
   "secrets": {
-    "stripe": {
-      "publicKey": "pk_test_PLACEHOLDER",
-      "secretKey": "sk_test_PLACEHOLDER",
-      "note": "Use Stripe test keys here - safe to commit"
-    },
-    "memberstack": {
-      "publicKey": "pk_sb_f9dcbbf600a9ef565a5d",
-      "secretKey": "ms_test_PLACEHOLDER",
-      "note": "Use Memberstack test keys here - safe to commit"
-    }
+    "note": "Secrets are loaded from environment variables - see .env.example"
   }
 }

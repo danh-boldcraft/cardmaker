@@ -16,14 +16,9 @@ Always reference the official Memberstack documentation:
 https://developers.memberstack.com/
 
 Specific sections:
-#### DomPackage
-https://developers.memberstack.com/dom-package/
-
-#### Admin Node.js package
-https://developers.memberstack.com/admin-node-package
-
-#### Admin REST API
-https://developers.memberstack.com/admin-rest-api
+- DomPackage: https://developers.memberstack.com/dom-package/
+- Admin Node.js package: https://developers.memberstack.com/admin-node-package
+- Admin REST API: https://developers.memberstack.com/admin-rest-api
 
 When implementing Memberstack features, fetch the relevant section above.
 
@@ -66,6 +61,7 @@ npm test                   # Run Lambda unit tests
 ```
 
 ### Environment Configuration
+- Prefer configuration via environment variables vs AWS secrets manager
 - Configs stored in `config/{env}.json`
 - `DEPLOY_ENV` env var selects environment (default: test)
 - Frontend auto-detects environment by hostname
