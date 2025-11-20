@@ -1,4 +1,4 @@
-const { handler } = require('./src/lambda/handler');
+const { handler } = require('../src/lambda/handler');
 
 // Test cases
 const testCases = [
