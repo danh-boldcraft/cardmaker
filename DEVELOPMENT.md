@@ -373,8 +373,11 @@ The API is rate-limited to 10 requests/second per endpoint. This is normal prote
 │   ├── local.json         # Local development settings
 │   ├── test.json          # Test environment
 │   └── prod.json          # Production (create from prod.json.example)
+├── tests/                 # Test files
+│   ├── lambda-handler.js  # Lambda unit tests
+│   ├── api-rate-limit.js  # API Gateway rate limit test
+│   └── api-rate-limit-v2.js # Alternative rate limit test
 ├── local-server.js        # Local backend simulator
-├── test-local.js          # Unit tests
 ├── .env.example           # Environment variable template
 └── package.json           # Dependencies and scripts
 ```

@@ -31,7 +31,7 @@ When implementing Memberstack features, fetch the relevant section above.
 - Outside of this CLAUDE.md file, limit project documentation to a high-level README.md and DEVELOPMENT.md which includes details. They shouldn't be redundant.
 
 ## Tests
-- Put oneoff tests in a /tests folder
+- Put oneoff tests in a /tests folder and prefix them with the component they're testing so if it's the lambda prefix with lambda
 
 ## Other
 - Configs stored in `config/{env}.json`
