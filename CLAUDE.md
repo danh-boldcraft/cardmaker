@@ -18,7 +18,6 @@ Always reference the official Memberstack documentation:
 
 When implementing Memberstack features, fetch the relevant section above.
 
-
 ## Environment Configuration
 - Prefer configuration via environment variables (env vars) vs AWS secrets manager
 - For env vars that must, or can, be set by a developer should be referenced in .env.example as follows:
@@ -28,7 +27,13 @@ When implementing Memberstack features, fetch the relevant section above.
 - Env vars in should start with "CT_" so they are grouped together alphabetically
 - For all required env vars, add checks in code code (where possible) to early-out and log the error.
 
+## File Contents
+- Outside of this CLAUDE.md file, limit project documentation to a high-level README.md and DEVELOPMENT.md which includes details. They shouldn't be redundant.
 
+## Tests
+- Put oneoff tests in a /tests folder
+
+## Other
 - Configs stored in `config/{env}.json`
 - `DEPLOY_ENV` env var selects environment (default: test)
 - Frontend auto-detects environment by hostname
