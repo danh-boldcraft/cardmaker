@@ -13,7 +13,8 @@
       "Bash(rg:*)",
       "Bash(ls:*)",
       "Bash(git checkout:*)",
-      "WebSearch"
+      "WebSearch",
+      "WebFetch(domain:developers.memberstack.com)"
     ],
     "deny": [],
     "ask": []
