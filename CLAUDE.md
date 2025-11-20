@@ -24,8 +24,8 @@ When implementing Memberstack features, fetch the relevant section above.
 - Required env vars must exist with placeholder values.
 - Optional env vars must have commented-out examples
 - All env vars must have comments documenting them.
-- Env vars in should start with "CT_" so they are grouped together alphabetically
-- For all required env vars, add checks in code code (where possible) to early-out and log the error.
+- Env vars should start with "CT_" so they are grouped together alphabetically
+- For all required env vars, add checks in code (where possible) to early-out and log the error.
 
 ## File Contents
 - Outside of this CLAUDE.md file, limit project documentation to a high-level README.md and DEVELOPMENT.md which includes details. They shouldn't be redundant.
