@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm test)",
+      "Bash(npx cdk deploy:*)",
+      "Bash(curl:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run deploy:test:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(fd:*)",
+      "Bash(rg:*)",
+      "Bash(ls:*)",
+      "Bash(git checkout:*)",
+      "Bash(gh auth status:*)",
+      "Bash(gh pr create:*)",
+      "WebSearch",
+      "WebFetch(domain:developers.memberstack.com)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

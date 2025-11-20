@@ -35,3 +35,6 @@ yarn-error.log*
 # prod.json contains production secrets (Stripe, Memberstack, etc.)
 # Use prod.json.example as a template
 config/prod.json
+
+# Local Claude Code settings (personal overrides)
+.claude/settings.local.json
