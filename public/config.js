@@ -19,6 +19,13 @@ const API_ENDPOINTS = {
   prod: 'https://m839o2ac1c.execute-api.us-west-2.amazonaws.com/prod/multiply'  // Production environment
 };
 
+// Memberstack public keys per environment
+const MEMBERSTACK_KEYS = {
+  local: 'pk_sb_f9dcbbf600a9ef565a5d',  // Use test key for local dev
+  test: 'pk_sb_f9dcbbf600a9ef565a5d',   // Test/sandbox key
+  prod: 'pk_live_REPLACE_WITH_YOUR_LIVE_KEY'  // Production key (update before going live)
+};
+
 // CloudFront domain mappings (to detect environment)
 const CLOUDFRONT_DOMAINS = {
   test: 'du85n5akt8cz3.cloudfront.net',  // Test environment CloudFront
@@ -78,6 +85,7 @@ function getApiEndpoint() {
 const API_CONFIG = {
   environment: detectEnvironment(),
   endpoint: getApiEndpoint(),
+  memberstackKey: MEMBERSTACK_KEYS[detectEnvironment()],
   debug: detectEnvironment() !== 'prod'  // Debug mode for local and test
 };
 

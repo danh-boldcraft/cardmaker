@@ -5,10 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multiply by 3 Service</title>
     <link rel="stylesheet" href="styles.css">
+    <script data-memberstack-app="app_cmi6d28zb00i70st12rm5ejbz" src="https://static.memberstack.com/scripts/v1/memberstack.js" type="text/javascript"></script>
 </head>
 <body>
     <div id="environmentBanner" class="environment-banner">
         <span id="environmentLabel"></span>
+    </div>
+
+    <!-- Auth Navbar -->
+    <nav id="authNavbar" class="auth-navbar">
+        <div class="nav-content">
+            <div class="nav-brand">Multiply App</div>
+            <div class="nav-auth">
+                <!-- Logged out state -->
+                <div id="loggedOutButtons" class="auth-buttons">
+                    <button id="loginBtn" class="nav-btn">Login</button>
+                    <button id="signupBtn" class="nav-btn nav-btn-primary">Sign Up</button>
+                </div>
+                <!-- Logged in state -->
+                <div id="loggedInButtons" class="auth-buttons hidden">
+                    <span id="userEmail" class="user-email"></span>
+                    <button id="logoutBtn" class="nav-btn">Logout</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Pro Banner -->
+    <div id="proBanner" class="pro-banner hidden">
+        I am a pro
     </div>
 
     <div class="container">
