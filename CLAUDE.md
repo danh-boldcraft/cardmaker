@@ -2,12 +2,31 @@
 
 This file provides guidance to Claude Code when working with code in this repository.
 
-## Search Guidelines
+## Local File System Search Guidelines
 
 ### Required Search Behavior
 - Always Use ripgrep (rg) for text searches
 - Always Use fd for file finding
 These tools are faster and respect .gitignore automatically.
+
+## Project Configuration
+### Memberstack Integration
+
+Always reference the official Memberstack documentation:
+https://developers.memberstack.com/
+
+Specific sections:
+#### DomPackage
+https://developers.memberstack.com/dom-package/
+
+#### Admin Node.js package
+https://developers.memberstack.com/admin-node-package
+
+#### Admin REST API
+https://developers.memberstack.com/admin-rest-api
+
+When implementing Memberstack features, fetch the relevant section above.
+
 
 ## Architecture Summary
 

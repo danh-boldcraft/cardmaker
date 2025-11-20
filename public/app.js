@@ -167,8 +167,8 @@ async function initMemberstack() {
         loginBtn.addEventListener('click', async () => {
             try {
                 const result = await memberstack.openModal('LOGIN');
-                if (result.data && result.data.member) {
-                    updateAuthUI(result.data.member);
+                if (result.data) {
+                    updateAuthUI(result.data);
                 }
             } catch (error) {
                 console.log('Login cancelled or failed:', error);
@@ -178,8 +178,8 @@ async function initMemberstack() {
         signupBtn.addEventListener('click', async () => {
             try {
                 const result = await memberstack.openModal('SIGNUP');
-                if (result.data && result.data.member) {
-                    updateAuthUI(result.data.member);
+                if (result.data) {
+                    updateAuthUI(result.data);
                 }
             } catch (error) {
                 console.log('Signup cancelled or failed:', error);
@@ -199,8 +199,8 @@ async function initMemberstack() {
         });
 
         // Listen for auth state changes
-        memberstack.onAuthChange((auth) => {
-            updateAuthUI(auth.member);
+        memberstack.onAuthChange((member) => {
+            updateAuthUI(member);
         });
 
         if (API_CONFIG.debug) {

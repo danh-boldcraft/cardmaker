@@ -19,12 +19,11 @@ const API_ENDPOINTS = {
   prod: 'https://m839o2ac1c.execute-api.us-west-2.amazonaws.com/prod/multiply'  // Production environment
 };
 
-// Memberstack public keys per environment
-const MEMBERSTACK_KEYS = {
-  local: 'pk_sb_f9dcbbf600a9ef565a5d',  // Use test key for local dev
-  test: 'pk_sb_f9dcbbf600a9ef565a5d',   // Test/sandbox key
-  prod: 'pk_live_REPLACE_WITH_YOUR_LIVE_KEY'  // Production key (update before going live)
-};
+// Note: Memberstack app ID is configured via data-memberstack-app attribute in index.html
+// The same Memberstack app is used across all environments (local, test, prod)
+// If you need different Memberstack apps per environment, you'll need to:
+// 1. Create separate HTML files, or
+// 2. Dynamically inject the Memberstack script tag based on environment
 
 // CloudFront domain mappings (to detect environment)
 const CLOUDFRONT_DOMAINS = {
@@ -85,7 +84,6 @@ function getApiEndpoint() {
 const API_CONFIG = {
   environment: detectEnvironment(),
   endpoint: getApiEndpoint(),
-  memberstackKey: MEMBERSTACK_KEYS[detectEnvironment()],
   debug: detectEnvironment() !== 'prod'  // Debug mode for local and test
 };
 
