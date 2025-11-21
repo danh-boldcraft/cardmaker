@@ -5,9 +5,11 @@ This file provides guidance to Claude Code when working with code in this reposi
 ## Local File System Search Guidelines
 
 ### Required Search Behavior
-- Always Use ripgrep (rg) for text searches
-- Always Use fd for file finding
-These tools are faster and respect .gitignore automatically.
+<search-behavior>
+  <rule>ALWAYS use ripgrep (rg) for text searches - faster and respects .gitignore</rule>
+  <rule>ALWAYS use fd for file finding - faster and respects .gitignore</rule>
+</search-behavior>
+rg and fd are faster and respect .gitignore automatically.
 
 ## Memberstack Integration
 
