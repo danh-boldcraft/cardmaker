@@ -119,20 +119,39 @@ This project supports three separate environments:
 
 ### Environment Variables
 
-All user-configurable environment variables use the `CT_` prefix:
+All user-configurable environment variables use the `CT_` prefix.
 
-**Required:**
-- `CT_MEMBERSTACK_PUBLIC_KEY` - Memberstack public API key
-- `CT_MEMBERSTACK_SECRET_KEY` - Memberstack secret API key
+**Environment-Specific Memberstack Keys (Required):**
+
+Each environment has its own set of Memberstack keys for security and isolation:
+
+- **Local Development:**
+  - `CT_MEMBERSTACK_LOCAL_PUBLIC_KEY` - Memberstack public key for local dev
+  - `CT_MEMBERSTACK_LOCAL_SECRET_KEY` - Memberstack secret key for local dev
+
+- **Test Environment:**
+  - `CT_MEMBERSTACK_TEST_PUBLIC_KEY` - Memberstack public key for test deployment
+  - `CT_MEMBERSTACK_TEST_SECRET_KEY` - Memberstack secret key for test deployment
+
+- **Production Environment:**
+  - `CT_MEMBERSTACK_PROD_PUBLIC_KEY` - Memberstack public key for production
+  - `CT_MEMBERSTACK_PROD_SECRET_KEY` - Memberstack secret key for production
+
+**How it works:**
+- `npm run local` → Uses `CT_MEMBERSTACK_LOCAL_*` keys
+- `npm run deploy:test` → Uses `CT_MEMBERSTACK_TEST_*` keys
+- `npm run deploy:prod` → Uses `CT_MEMBERSTACK_PROD_*` keys
+
+**Typical setup:** Set LOCAL and TEST keys to the same Memberstack sandbox/test keys. Only PROD keys should use live Memberstack credentials.
 
 **Optional:**
 - `CT_PORT` - Local backend port (default: 3001)
 - `CT_HOST` - Local backend host (default: localhost)
 
 **Set by npm scripts:**
-- `DEPLOY_ENV` - Environment to deploy (test/prod)
+- `DEPLOY_ENV` - Environment to deploy (local/test/prod)
 
-See `.env.example` for details.
+See `.env.example` for detailed examples.
 
 ---
 
@@ -150,16 +169,29 @@ See `.env.example` for details.
    npm run bootstrap
    ```
 
-3. **Set environment variables** with your API keys:
-   ```bash
-   # On macOS/Linux:
-   export CT_MEMBERSTACK_PUBLIC_KEY="pk_sb_your_key_here"
-   export CT_MEMBERSTACK_SECRET_KEY="ms_test_your_key_here"
+3. **Set environment-specific API keys in `.env`:**
 
-   # On Windows (PowerShell):
-   $env:CT_MEMBERSTACK_PUBLIC_KEY="pk_sb_your_key_here"
-   $env:CT_MEMBERSTACK_SECRET_KEY="ms_test_your_key_here"
+   Copy `.env.example` to `.env` and fill in your actual keys:
+   ```bash
+   cp .env.example .env
    ```
+
+   Edit `.env` with your Memberstack keys for each environment:
+   ```bash
+   # Local (usually test/sandbox keys)
+   CT_MEMBERSTACK_LOCAL_PUBLIC_KEY="pk_sb_..."
+   CT_MEMBERSTACK_LOCAL_SECRET_KEY="ms_test_..."
+
+   # Test (sandbox keys)
+   CT_MEMBERSTACK_TEST_PUBLIC_KEY="pk_sb_..."
+   CT_MEMBERSTACK_TEST_SECRET_KEY="ms_test_..."
+
+   # Production (live keys)
+   CT_MEMBERSTACK_PROD_PUBLIC_KEY="pk_live_..."
+   CT_MEMBERSTACK_PROD_SECRET_KEY="ms_live_..."
+   ```
+
+   **Important:** Set this up once - the deployment scripts will automatically use the correct keys for each environment.
 
 ### Deploy to Test Environment
 
@@ -176,16 +208,15 @@ After deployment, CDK outputs:
 
 ### Deploy to Production
 
-1. **Ensure you have production API keys set:**
-   ```bash
-   export CT_MEMBERSTACK_PUBLIC_KEY="pk_live_..."
-   export CT_MEMBERSTACK_SECRET_KEY="ms_live_..."
-   ```
+1. **Ensure your `.env` has production keys set:**
+   - Verify `CT_MEMBERSTACK_PROD_PUBLIC_KEY` and `CT_MEMBERSTACK_PROD_SECRET_KEY` are set to your live Memberstack credentials
 
 2. **Deploy:**
    ```bash
    npm run deploy:prod
    ```
+
+   The script automatically uses the production keys from your `.env` file - no manual switching needed!
 
 3. **Test thoroughly** before sharing with users
 

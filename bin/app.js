@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 // This file is used for deployment.
 // npm scripts set DEPLOY_ENV. CDK auto-detects AWS account/region from your AWS CLI config.
 const cdk = require('aws-cdk-lib');
