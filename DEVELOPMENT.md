@@ -232,7 +232,7 @@ npm run destroy:prod
 
 ## Testing
 
-### Local Testing
+### Backend Unit Tests
 
 **Run unit tests:**
 ```bash
@@ -258,6 +258,87 @@ curl -X POST http://localhost:3001/multiply \
   -d '{}'
 # Response: {"error": "Missing required field: number"}
 ```
+
+### Frontend E2E Tests
+
+End-to-end tests use **Playwright** to automate browser interactions, testing the complete user flow from input to result display.
+
+#### Running E2E Tests Locally
+
+**1. Start the local development server:**
+```bash
+# Terminal 1: Start frontend
+npm run dev
+```
+
+**2. Run the tests:**
+```bash
+# Terminal 2: Run tests in headless mode
+npm run test:frontend
+
+# Or run with visible browser (for debugging)
+npm run test:frontend:headed
+
+# Or open Playwright UI (interactive mode)
+npm run test:frontend:ui
+```
+
+#### Test Coverage
+
+The E2E tests verify:
+- ✅ Form submission with mouse clicks
+- ✅ Correct calculation results displayed
+- ✅ Loading states (spinner, disabled inputs)
+- ✅ Error handling (network errors, API errors)
+- ✅ Rate limit handling (HTTP 429 responses)
+- ✅ Input validation
+- ✅ Multiple numeric inputs (positive, negative, decimals, zero)
+- ✅ Result updates on subsequent submissions
+
+#### Test Configuration
+
+Tests are configured in `playwright.config.js`:
+- **Browsers**: Chromium, Firefox, WebKit (Safari)
+- **Base URL**: http://localhost:8080 (configurable via `BASE_URL` env var)
+- **Test Location**: `tests/frontend-*.spec.js`
+- **Screenshots**: Captured on failure
+- **Videos**: Recorded on failure
+
+#### Running Tests Against Deployed Environments
+
+To test against deployed AWS environments:
+
+```bash
+# Test against test environment
+BASE_URL=https://du85n5akt8cz3.cloudfront.net npm run test:frontend
+
+# Test against production
+BASE_URL=https://d2rg9tky4q7r5f.cloudfront.net npm run test:frontend
+```
+
+**Note:** When testing deployed environments, tests use **real backend APIs** instead of mocks. Ensure your API is deployed and functional.
+
+#### Viewing Test Reports
+
+```bash
+# Open HTML report (after running tests)
+npm run test:frontend:report
+```
+
+Reports include:
+- Test execution timeline
+- Screenshots on failure
+- Video recordings on failure
+- Detailed error traces
+
+#### CI/CD Integration
+
+E2E tests run automatically on GitHub Actions for:
+- Push to `master` branch
+- Pull requests to `master`
+- Manual workflow triggers
+
+Tests run in parallel across all three browsers (Chromium, Firefox, WebKit) and upload artifacts on failure.
 
 ### Testing Deployed Endpoints
 
@@ -376,7 +457,7 @@ The API is rate-limited to 10 requests/second per endpoint. This is normal prote
 ├── tests/                 # Test files
 │   ├── lambda-handler.js  # Lambda unit tests
 │   ├── api-rate-limit.js  # API Gateway rate limit test
-│   └── api-rate-limit-v2.js # Alternative rate limit test
+│   └── frontend-form-submission.spec.js # Frontend E2E tests (Playwright)
 ├── local-server.js        # Local backend simulator
 ├── .env.example           # Environment variable template
 └── package.json           # Dependencies and scripts
@@ -394,8 +475,12 @@ The API is rate-limited to 10 requests/second per endpoint. This is normal prote
 - `npm run debug` - Start backend with debugger
 
 ### Testing
-- `npm test` - Run local tests
-- `npm run test:watch` - Auto-run tests on file changes
+- `npm test` - Run backend unit tests
+- `npm run test:watch` - Auto-run unit tests on file changes
+- `npm run test:frontend` - Run frontend E2E tests (headless)
+- `npm run test:frontend:headed` - Run E2E tests with visible browser
+- `npm run test:frontend:ui` - Open Playwright UI (interactive mode)
+- `npm run test:frontend:report` - View HTML test report
 
 ### Deployment
 - `npm run deploy:test` - Deploy to test environment

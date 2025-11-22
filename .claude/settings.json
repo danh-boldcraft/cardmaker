@@ -16,6 +16,10 @@
       "Bash(gh auth status:*)",
       "Bash(gh pr create:*)",
       "WebSearch",
+      "Bash(git push:*)",
+      "Bash(npm run test:frontend:*)",
+      "Bash(npx playwright install)",
+      "Bash(npm install:*)",
       "WebFetch(domain:developers.memberstack.com)"
     ],
     "deny": [],
