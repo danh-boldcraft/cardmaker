@@ -36,6 +36,19 @@ Opens frontend at http://localhost:8080 and backend at http://localhost:3001.
 
 **For complete setup, deployment, and development instructions, see [DEVELOPMENT.md](DEVELOPMENT.md).**
 
+## Testing
+
+```bash
+# Run backend unit tests
+npm test
+
+# Run frontend E2E tests (requires local server)
+npm run dev              # Start server in one terminal
+npm run test:frontend    # Run tests in another terminal
+```
+
+**For detailed testing instructions, see [DEVELOPMENT.md](DEVELOPMENT.md).**
+
 ## API Usage
 
 **Endpoint:** `POST /multiply`

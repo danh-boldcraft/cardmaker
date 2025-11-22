@@ -15,6 +15,10 @@
     "synth": "cdk synth",
     "test": "node tests/lambda-handler.js",
     "test:watch": "nodemon --watch src tests/lambda-handler.js",
+    "test:frontend": "playwright test",
+    "test:frontend:headed": "playwright test --headed",
+    "test:frontend:ui": "playwright test --ui",
+    "test:frontend:report": "playwright show-report",
     "dev": "live-server public --port=8080 --no-browser",
     "dev:open": "live-server public --port=8080",
     "backend": "node local-server.js",
@@ -33,11 +37,13 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "aws-cdk": "^2.120.0",
     "concurrently": "^8.2.1",
     "cross-env": "^7.0.3",
     "live-server": "^1.2.2",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "wait-on": "^9.0.3"
   },
   "optionalDependencies": {
     "cors": "^2.8.5",
