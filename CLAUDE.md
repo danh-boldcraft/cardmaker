@@ -13,12 +13,25 @@ rg and fd are faster and respect .gitignore automatically.
 
 ## Memberstack Integration
 
-Always reference the official Memberstack documentation:
-- DomPackage: https://developers.memberstack.com/dom-package/
-- Admin Node.js package: https://developers.memberstack.com/admin-node-package
-- Admin REST API: https://developers.memberstack.com/admin-rest-api
+### Local Documentation Files
+Before searching the web for information about Memberstack,
+always check the local .md docs first, located in:
 
-When implementing Memberstack features, fetch the relevant section above.
+Always reference the official Memberstack documentation:
+- DomPackage: `./docs/memberstack--dom-package/`
+- Admin Node.js package: `./docs/mememberstack--admin-node-package/`
+- Admin REST API: `./docs/memberstack--admin-rest-api/`
+
+When answering questions about [specific topics], reference these local files
+by reading them directly instead of performing web searches.
+
+## How to Use Local Docs
+
+1. First check the local HTML files in the documentation directory
+2. Only search the web if information is not found locally
+3. The local documentation is authoritative for this project
+
+
 
 ## Environment Configuration
 - Prefer configuration via environment variables (env vars) vs AWS secrets manager
