@@ -9,6 +9,9 @@ cdk.out/
 .cdk.staging
 cdk.context.json
 
+# Temporary deployment files
+.tmp-deploy/
+
 # IDE
 .idea/
 .vscode/

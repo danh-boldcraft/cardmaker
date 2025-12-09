@@ -150,14 +150,23 @@ window.addEventListener('DOMContentLoaded', async () => {
 // Initialize Memberstack
 async function initMemberstack() {
     try {
-        // Wait for Memberstack to be available (auto-initialized via data-memberstack-app attribute)
-        if (typeof window.$memberstackDom === 'undefined') {
+        // Wait for Memberstack SDK to be available
+        if (typeof window.MemberstackDom === 'undefined') {
             console.error('Memberstack SDK not loaded');
             return;
         }
 
-        // Get the auto-initialized Memberstack instance
-        memberstack = window.$memberstackDom;
+        // Validate public key is configured
+        if (!API_CONFIG.memberstackPublicKey || API_CONFIG.memberstackPublicKey.includes('PLACEHOLDER')) {
+            console.error('Memberstack public key not configured for', API_CONFIG.environment, 'environment');
+            console.error('For local development, ensure CT_MEMBERSTACK_LOCAL_PUBLIC_KEY is set in .env');
+            return;
+        }
+
+        // Initialize Memberstack with environment-specific public key
+        memberstack = window.MemberstackDom.init({
+            publicKey: API_CONFIG.memberstackPublicKey
+        });
 
         // Check current auth state
         const member = await memberstack.getCurrentMember();

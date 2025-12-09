@@ -19,11 +19,19 @@ const API_ENDPOINTS = {
   prod: 'https://m839o2ac1c.execute-api.us-west-2.amazonaws.com/prod/multiply'  // Production environment
 };
 
-// Note: Memberstack app ID is configured via data-memberstack-app attribute in index.html
-// The same Memberstack app is used across all environments (local, test, prod)
-// If you need different Memberstack apps per environment, you'll need to:
-// 1. Create separate HTML files, or
-// 2. Dynamically inject the Memberstack script tag based on environment
+// Environment-specific Memberstack public keys
+// Test mode keys (pk_sb_*) access test members only
+// Live mode keys (pk_*) access live/production members only
+//
+// LOCAL DEVELOPMENT: Temporarily paste your test public key (CT_MEMBERSTACK_LOCAL_PUBLIC_KEY
+// from .env) on the 'local:' line below when running locally. Don't commit this change!
+//
+// TEST/PROD: Keys are automatically injected during deployment
+const MEMBERSTACK_PUBLIC_KEYS = {
+  local: 'MEMBERSTACK_PUBLIC_KEY_PLACEHOLDER',   // Paste your pk_sb_* key here for local dev
+  test: 'MEMBERSTACK_PUBLIC_KEY_PLACEHOLDER',    // Injected during deployment
+  prod: 'MEMBERSTACK_PUBLIC_KEY_PLACEHOLDER'     // Injected during deployment
+};
 
 // CloudFront domain mappings (to detect environment)
 const CLOUDFRONT_DOMAINS = {
@@ -80,10 +88,32 @@ function getApiEndpoint() {
   return endpoint;
 }
 
+/**
+ * Get Memberstack public key for current environment
+ */
+function getMemberstackPublicKey() {
+  const env = detectEnvironment();
+  const publicKey = MEMBERSTACK_PUBLIC_KEYS[env];
+
+  // Validate key is configured
+  if (publicKey.includes('PLACEHOLDER')) {
+    if (env === 'local') {
+      console.warn(`⚠️ Memberstack public key not set for local development.`);
+      console.warn(`   Temporarily paste your CT_MEMBERSTACK_LOCAL_PUBLIC_KEY on the 'local:' line in config.js`);
+    } else {
+      console.warn(`⚠️ ${env.toUpperCase()} Memberstack public key not configured yet!`);
+      console.warn(`   This should be injected automatically during deployment.`);
+    }
+  }
+
+  return publicKey;
+}
+
 // Global API configuration
 const API_CONFIG = {
   environment: detectEnvironment(),
   endpoint: getApiEndpoint(),
+  memberstackPublicKey: getMemberstackPublicKey(),
   debug: detectEnvironment() !== 'prod'  // Debug mode for local and test
 };
 
@@ -92,6 +122,7 @@ if (API_CONFIG.debug) {
   console.log('🔧 API Configuration:');
   console.log('   Environment:', API_CONFIG.environment.toUpperCase());
   console.log('   Endpoint:', API_CONFIG.endpoint);
+  console.log('   Memberstack Key:', API_CONFIG.memberstackPublicKey.substring(0, 10) + '...');
   console.log('   Debug mode: ON');
   if (API_CONFIG.environment === 'local') {
     console.log('   💡 Tip: Make sure local backend is running (npm run backend)');
