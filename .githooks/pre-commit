@@ -1,0 +1,28 @@
+#!/bin/sh
+#
+# Pre-commit hook to prevent commits containing "nocheckin"
+#
+
+# Get list of staged files, excluding files that should be allowed to contain "nocheckin"
+staged_files=$(git diff --cached --name-only --diff-filter=ACM | grep -v -E '\.(md|txt)$|^\.githooks/')
+
+if [ -z "$staged_files" ]; then
+    exit 0
+fi
+
+# Search for "nocheckin" in staged files (case-insensitive)
+if echo "$staged_files" | xargs git diff --cached | grep -i "nocheckin" > /dev/null; then
+    echo "ERROR: Commit blocked - found 'nocheckin' in staged changes"
+    echo ""
+    echo "Files containing 'nocheckin':"
+    echo "$staged_files" | while read file; do
+        if git diff --cached "$file" | grep -i "nocheckin" > /dev/null; then
+            echo "  - $file"
+        fi
+    done
+    echo ""
+    echo "Please remove 'nocheckin' markers before committing."
+    exit 1
+fi
+
+exit 0

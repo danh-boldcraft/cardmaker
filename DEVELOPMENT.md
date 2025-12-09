@@ -20,7 +20,14 @@ This guide covers local development, testing, deployment, and environment manage
    npm install
    ```
 
-2. **Set up environment variables:**
+2. **Set up git hooks:**
+   ```bash
+   git config core.hooksPath .githooks
+   ```
+
+   This enables the pre-commit hook that prevents committing code with "nocheckin" markers.
+
+3. **Set up environment variables:**
    ```bash
    # Copy the example file
    cp .env.example .env
@@ -29,7 +36,7 @@ This guide covers local development, testing, deployment, and environment manage
    # See .env.example for required variables
    ```
 
-3. **Run locally:**
+4. **Run locally:**
    ```bash
    npm run local
    ```
@@ -89,6 +96,36 @@ npm test
 ### Local Environment Detection
 
 The frontend automatically detects it's running locally and uses `http://localhost:3001/multiply` as the API endpoint. See `public/config.js` for configuration.
+
+### Git Hooks
+
+This project uses git hooks to enforce code quality standards:
+
+**Pre-commit Hook:**
+- Prevents committing code containing "nocheckin" markers
+- Searches all staged files (case-insensitive)
+- Lists which files contain the marker if found
+
+**Marking Code as Work-in-Progress:**
+
+To prevent accidentally committing unfinished or temporary code:
+
+```javascript
+// nocheckin - temporary debug code
+console.log('Debug info:', data);
+```
+
+The commit will be blocked until you remove the "nocheckin" comment.
+
+**Hook Setup:**
+
+Hooks are stored in `.githooks/` and committed to the repository. Each developer needs to run this once after cloning:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+This is included in the Quick Start instructions above.
 
 ---
 
