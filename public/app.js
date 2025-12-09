@@ -1,3 +1,6 @@
+// Import Memberstack DOM package
+import memberstackDOM from 'https://cdn.jsdelivr.net/npm/@memberstack/dom/+esm';
+
 // DOM Elements
 const form = document.getElementById('multiplyForm');
 const numberInput = document.getElementById('numberInput');
@@ -150,12 +153,6 @@ window.addEventListener('DOMContentLoaded', async () => {
 // Initialize Memberstack
 async function initMemberstack() {
     try {
-        // Wait for Memberstack SDK to be available
-        if (typeof window.MemberstackDom === 'undefined') {
-            console.error('Memberstack SDK not loaded');
-            return;
-        }
-
         // Validate public key is configured
         if (!API_CONFIG.memberstackPublicKey || API_CONFIG.memberstackPublicKey.includes('PLACEHOLDER')) {
             console.error('Memberstack public key not configured for', API_CONFIG.environment, 'environment');
@@ -164,7 +161,7 @@ async function initMemberstack() {
         }
 
         // Initialize Memberstack with environment-specific public key
-        memberstack = window.MemberstackDom.init({
+        memberstack = memberstackDOM.init({
             publicKey: API_CONFIG.memberstackPublicKey
         });
 
