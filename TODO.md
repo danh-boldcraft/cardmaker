@@ -1,0 +1,4 @@
+- Actually set the memberstack keys for production.
+- Add a function where a logged-in user can request info about themselves (what's in memberstack), the frontend calls the backend, the backend retrieves info about the user (simple stuff like their name, email, and plan) and displays it
+- Add a POC feature where when a user is created, they are stored in some sort of relation database.
+- Add a POC feature where a user can add, modify, and delete some data (just a string and a number)
