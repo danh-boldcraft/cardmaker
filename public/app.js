@@ -21,6 +21,9 @@ const loggedOutButtons = document.getElementById('loggedOutButtons');
 const loggedInButtons = document.getElementById('loggedInButtons');
 const userEmail = document.getElementById('userEmail');
 const proBanner = document.getElementById('proBanner');
+const getInfoBtn = document.getElementById('getInfoBtn');
+const memberInfoDiv = document.getElementById('memberInfo');
+const memberInfoContent = document.getElementById('memberInfoContent');
 
 // Memberstack instance
 let memberstack = null;
@@ -201,6 +204,58 @@ async function initMemberstack() {
                 }
             } catch (error) {
                 console.error('Logout failed:', error);
+            }
+        });
+
+        // Get My Info button handler
+        getInfoBtn.addEventListener('click', async () => {
+            // Hide previous results
+            memberInfoDiv.classList.add('hidden');
+            hideError();
+
+            try {
+                // Get the JWT token from Memberstack
+                const token = memberstack.getMemberCookie();
+                if (!token) {
+                    showError('Not logged in or no session token available');
+                    return;
+                }
+
+                // Build endpoint URL (replace /multiply with /member-info)
+                const memberInfoEndpoint = API_CONFIG.endpoint.replace('/multiply', '/member-info');
+
+                // Make authenticated request
+                const response = await fetch(memberInfoEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `Request failed with status ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Display the info
+                memberInfoContent.innerHTML = `
+                    <p><strong>Email:</strong> ${data.email}</p>
+                    <p><strong>Name:</strong> ${data.name || 'Not set'}</p>
+                    <p><strong>Plans:</strong> ${data.plans.length > 0
+                        ? data.plans.map(p => `${p.planName} (${p.status})`).join(', ')
+                        : 'No plans'}</p>
+                `;
+                memberInfoDiv.classList.remove('hidden');
+
+                if (API_CONFIG.debug) {
+                    console.log('Member info retrieved:', data);
+                }
+            } catch (error) {
+                console.error('Error fetching member info:', error);
+                showError(error.message);
             }
         });
 

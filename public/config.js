@@ -28,7 +28,7 @@ const API_ENDPOINTS = {
 //
 // TEST/PROD: Keys are automatically injected during deployment
 const MEMBERSTACK_PUBLIC_KEYS = {
-  local: 'MEMBERSTACK_PUBLIC_KEY_PLACEHOLDER',   // Paste your pk_sb_* key here for local dev
+  local: 'MEMBERSTACK_PUBLIC_KEY_PLACEHOLDER',   // Paste your pk_sb_* key here for local dev nocheckin
   test: 'MEMBERSTACK_PUBLIC_KEY_PLACEHOLDER',    // Injected during deployment
   prod: 'MEMBERSTACK_PUBLIC_KEY_PLACEHOLDER'     // Injected during deployment
 };

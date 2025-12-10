@@ -11,6 +11,15 @@
 // Load environment variables from .env file
 require('dotenv').config();
 
+// Map environment-specific keys to what the Lambda handler expects
+// For local development, use the LOCAL keys
+if (process.env.CT_MEMBERSTACK_LOCAL_SECRET_KEY && !process.env.MEMBERSTACK_SECRET_KEY) {
+  process.env.MEMBERSTACK_SECRET_KEY = process.env.CT_MEMBERSTACK_LOCAL_SECRET_KEY;
+}
+if (process.env.CT_MEMBERSTACK_LOCAL_PUBLIC_KEY && !process.env.MEMBERSTACK_PUBLIC_KEY) {
+  process.env.MEMBERSTACK_PUBLIC_KEY = process.env.CT_MEMBERSTACK_LOCAL_PUBLIC_KEY;
+}
+
 const http = require('http');
 const url = require('url');
 const { handler } = require('./src/lambda/handler');
@@ -39,8 +48,8 @@ const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
 
-  // Only handle POST requests to /multiply
-  if (req.method !== 'POST' || pathname !== '/multiply') {
+  // Only handle POST requests to /multiply and /member-info
+  if (req.method !== 'POST' || (pathname !== '/multiply' && pathname !== '/member-info')) {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Not found' }));
     return;
@@ -57,10 +66,11 @@ const server = http.createServer((req, res) => {
       // Simulate API Gateway event format
       const event = {
         httpMethod: 'POST',
-        path: '/multiply',
+        path: pathname,  // Use actual pathname instead of hardcoded '/multiply'
         body: body,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': req.headers.authorization || ''  // Pass Authorization header
         },
       };
 
