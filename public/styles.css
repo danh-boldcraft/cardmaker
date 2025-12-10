@@ -296,6 +296,34 @@ button[type="submit"]:disabled {
     }
 }
 
+/* Member Info Display */
+.member-info {
+    max-width: 480px;
+    margin: 1rem auto;
+}
+
+.member-info-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.member-info-card h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+}
+
+.member-info-card p {
+    margin: 0.5rem 0;
+    font-size: 1rem;
+}
+
+.member-info-card strong {
+    opacity: 0.9;
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
     .card {
