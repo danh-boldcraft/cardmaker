@@ -1,3 +1,5 @@
+# This file just describes a POC feature where the frontend calls the backend which calls Memberstack's API and returns some data about the user.
+
 # POC: Get Member Info Feature
 
 ## Overview
