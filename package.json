@@ -1,7 +1,7 @@
 {
-  "name": "multiply-service",
+  "name": "cardmaker",
   "version": "1.0.0",
-  "description": "Simple backend service that multiplies a number by 3",
+  "description": "Art creation platform with AI image generation APIs",
   "main": "index.js",
   "scripts": {
     "cdk": "cdk",

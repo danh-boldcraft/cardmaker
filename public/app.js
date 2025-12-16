@@ -159,7 +159,7 @@ async function initMemberstack() {
         // Validate public key is configured
         if (!API_CONFIG.memberstackPublicKey || API_CONFIG.memberstackPublicKey.includes('PLACEHOLDER')) {
             console.error('Memberstack public key not configured for', API_CONFIG.environment, 'environment');
-            console.error('For local development, ensure CT_MEMBERSTACK_LOCAL_PUBLIC_KEY is set in .env');
+            console.error('For local development, ensure CM_MEMBERSTACK_LOCAL_PUBLIC_KEY is set in .env');
             return;
         }
 

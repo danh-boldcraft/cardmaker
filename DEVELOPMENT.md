@@ -1,6 +1,6 @@
 # Development Guide
 
-This guide covers local development, testing, deployment, and environment management for the multiply service.
+This guide covers local development, testing, deployment, and environment management for Cardmaker.
 
 ## Table of Contents
 - [Local Development](#local-development)
@@ -145,7 +145,7 @@ This project supports three separate environments:
 - **Infrastructure**: Separate AWS stack (`MultiplyStack-Test`)
 - **Configuration**: `config/test.json`
 - **Commands**: `npm run deploy:test`, `npm run destroy:test`
-- **Secrets**: Set via environment variables (CT_MEMBERSTACK_PUBLIC_KEY, CT_MEMBERSTACK_SECRET_KEY)
+- **Secrets**: Set via environment variables (CM_MEMBERSTACK_PUBLIC_KEY, CM_MEMBERSTACK_SECRET_KEY)
 
 ### Production Environment
 - **Purpose**: Live production deployment
@@ -156,34 +156,34 @@ This project supports three separate environments:
 
 ### Environment Variables
 
-All user-configurable environment variables use the `CT_` prefix.
+All user-configurable environment variables use the `CM_` prefix.
 
 **Environment-Specific Memberstack Keys (Required):**
 
 Each environment has its own set of Memberstack keys for security and isolation:
 
 - **Local Development:**
-  - `CT_MEMBERSTACK_LOCAL_PUBLIC_KEY` - Memberstack public key for local dev
-  - `CT_MEMBERSTACK_LOCAL_SECRET_KEY` - Memberstack secret key for local dev
+  - `CM_MEMBERSTACK_LOCAL_PUBLIC_KEY` - Memberstack public key for local dev
+  - `CM_MEMBERSTACK_LOCAL_SECRET_KEY` - Memberstack secret key for local dev
 
 - **Test Environment:**
-  - `CT_MEMBERSTACK_TEST_PUBLIC_KEY` - Memberstack public key for test deployment
-  - `CT_MEMBERSTACK_TEST_SECRET_KEY` - Memberstack secret key for test deployment
+  - `CM_MEMBERSTACK_TEST_PUBLIC_KEY` - Memberstack public key for test deployment
+  - `CM_MEMBERSTACK_TEST_SECRET_KEY` - Memberstack secret key for test deployment
 
 - **Production Environment:**
-  - `CT_MEMBERSTACK_PROD_PUBLIC_KEY` - Memberstack public key for production
-  - `CT_MEMBERSTACK_PROD_SECRET_KEY` - Memberstack secret key for production
+  - `CM_MEMBERSTACK_PROD_PUBLIC_KEY` - Memberstack public key for production
+  - `CM_MEMBERSTACK_PROD_SECRET_KEY` - Memberstack secret key for production
 
 **How it works:**
-- `npm run local` → Uses `CT_MEMBERSTACK_LOCAL_*` keys
-- `npm run deploy:test` → Uses `CT_MEMBERSTACK_TEST_*` keys
-- `npm run deploy:prod` → Uses `CT_MEMBERSTACK_PROD_*` keys
+- `npm run local` → Uses `CM_MEMBERSTACK_LOCAL_*` keys
+- `npm run deploy:test` → Uses `CM_MEMBERSTACK_TEST_*` keys
+- `npm run deploy:prod` → Uses `CM_MEMBERSTACK_PROD_*` keys
 
 **Typical setup:** Set LOCAL and TEST keys to the same Memberstack sandbox/test keys. Only PROD keys should use live Memberstack credentials.
 
 **Optional:**
-- `CT_PORT` - Local backend port (default: 3001)
-- `CT_HOST` - Local backend host (default: localhost)
+- `CM_PORT` - Local backend port (default: 3001)
+- `CM_HOST` - Local backend host (default: localhost)
 
 **Set by npm scripts:**
 - `DEPLOY_ENV` - Environment to deploy (local/test/prod)
@@ -216,16 +216,16 @@ See `.env.example` for detailed examples.
    Edit `.env` with your Memberstack keys for each environment:
    ```bash
    # Local (usually test/sandbox keys)
-   CT_MEMBERSTACK_LOCAL_PUBLIC_KEY="pk_sb_..."
-   CT_MEMBERSTACK_LOCAL_SECRET_KEY="ms_test_..."
+   CM_MEMBERSTACK_LOCAL_PUBLIC_KEY="pk_sb_..."
+   CM_MEMBERSTACK_LOCAL_SECRET_KEY="ms_test_..."
 
    # Test (sandbox keys)
-   CT_MEMBERSTACK_TEST_PUBLIC_KEY="pk_sb_..."
-   CT_MEMBERSTACK_TEST_SECRET_KEY="ms_test_..."
+   CM_MEMBERSTACK_TEST_PUBLIC_KEY="pk_sb_..."
+   CM_MEMBERSTACK_TEST_SECRET_KEY="ms_test_..."
 
    # Production (live keys)
-   CT_MEMBERSTACK_PROD_PUBLIC_KEY="pk_live_..."
-   CT_MEMBERSTACK_PROD_SECRET_KEY="ms_live_..."
+   CM_MEMBERSTACK_PROD_PUBLIC_KEY="pk_live_..."
+   CM_MEMBERSTACK_PROD_SECRET_KEY="ms_live_..."
    ```
 
    **Important:** Set this up once - the deployment scripts will automatically use the correct keys for each environment.
@@ -246,7 +246,7 @@ After deployment, CDK outputs:
 ### Deploy to Production
 
 1. **Ensure your `.env` has production keys set:**
-   - Verify `CT_MEMBERSTACK_PROD_PUBLIC_KEY` and `CT_MEMBERSTACK_PROD_SECRET_KEY` are set to your live Memberstack credentials
+   - Verify `CM_MEMBERSTACK_PROD_PUBLIC_KEY` and `CM_MEMBERSTACK_PROD_SECRET_KEY` are set to your live Memberstack credentials
 
 2. **Deploy:**
    ```bash
@@ -378,10 +378,10 @@ To test against deployed AWS environments:
 
 ```bash
 # Test against test environment
-BASE_URL=https://du85n5akt8cz3.cloudfront.net npm run test:frontend
+BASE_URL=https://YOUR_TEST_CLOUDFRONT_DOMAIN.cloudfront.net npm run test:frontend
 
 # Test against production
-BASE_URL=https://d2rg9tky4q7r5f.cloudfront.net npm run test:frontend
+BASE_URL=https://YOUR_PROD_CLOUDFRONT_DOMAIN.cloudfront.net npm run test:frontend
 ```
 
 **Note:** When testing deployed environments, tests use **real backend APIs** instead of mocks. Ensure your API is deployed and functional.
@@ -428,7 +428,7 @@ curl -X POST YOUR_API_ENDPOINT/multiply \
 
 Solution 1: Use a different port
 ```bash
-CT_PORT=3002 npm run backend
+CM_PORT=3002 npm run backend
 ```
 
 Solution 2: Kill the process
@@ -465,10 +465,10 @@ ls config/test.json
 
 **"Missing required environment variables"**
 
-For test/prod deployments, set the CT_MEMBERSTACK variables:
+For test/prod deployments, set the CM_MEMBERSTACK variables:
 ```bash
-export CT_MEMBERSTACK_PUBLIC_KEY="your_key"
-export CT_MEMBERSTACK_SECRET_KEY="your_secret"
+export CM_MEMBERSTACK_PUBLIC_KEY="your_key"
+export CM_MEMBERSTACK_SECRET_KEY="your_secret"
 ```
 
 **"Unable to resolve AWS account"**

@@ -1,6 +1,6 @@
-# Multiply Service
+# Cardmaker
 
-A simple serverless application that multiplies a number by 3, featuring a web frontend and backend API deployed on AWS.
+An art creation platform with AI image generation APIs, featuring a web frontend and backend API deployed on AWS.
 
 ## Features
 

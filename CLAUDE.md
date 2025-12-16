@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working with code in this repository.
+This file provides guidance to Claude Code when working with the Cardmaker project.
 
 ## Local File System Search Guidelines
 
@@ -39,7 +39,7 @@ by reading them directly instead of performing web searches.
 - Required env vars must exist with placeholder values.
 - Optional env vars must have commented-out examples
 - All env vars must have comments documenting them.
-- Env vars should start with "CT_" so they are grouped together alphabetically
+- Env vars should start with "CM_" so they are grouped together alphabetically
 - For all required env vars, add checks in code (where possible) to early-out and log the error.
 
 ## File Contents

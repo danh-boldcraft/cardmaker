@@ -15,15 +15,15 @@
 // Environment-specific API endpoints
 const API_ENDPOINTS = {
   local: 'http://localhost:3001/multiply',
-  test: 'https://irvyesnnzj.execute-api.us-west-2.amazonaws.com/prod/multiply',  // Test environment
-  prod: 'https://m839o2ac1c.execute-api.us-west-2.amazonaws.com/prod/multiply'  // Production environment
+  test: 'REPLACE_WITH_TEST_API_ENDPOINT',  // Test environment - update after deployment
+  prod: 'REPLACE_WITH_PROD_API_ENDPOINT'   // Production environment - update after deployment
 };
 
 // Environment-specific Memberstack public keys
 // Test mode keys (pk_sb_*) access test members only
 // Live mode keys (pk_*) access live/production members only
 //
-// LOCAL DEVELOPMENT: Temporarily paste your test public key (CT_MEMBERSTACK_LOCAL_PUBLIC_KEY
+// LOCAL DEVELOPMENT: Temporarily paste your test public key (CM_MEMBERSTACK_LOCAL_PUBLIC_KEY
 // from .env) on the 'local:' line below when running locally. Don't commit this change!
 //
 // TEST/PROD: Keys are automatically injected during deployment
@@ -35,8 +35,8 @@ const MEMBERSTACK_PUBLIC_KEYS = {
 
 // CloudFront domain mappings (to detect environment)
 const CLOUDFRONT_DOMAINS = {
-  test: 'du85n5akt8cz3.cloudfront.net',  // Test environment CloudFront
-  prod: 'd2rg9tky4q7r5f.cloudfront.net'  // Production environment CloudFront
+  test: 'REPLACE_WITH_TEST_CLOUDFRONT_DOMAIN',  // Test environment CloudFront - update after deployment
+  prod: 'REPLACE_WITH_PROD_CLOUDFRONT_DOMAIN'   // Production environment CloudFront - update after deployment
 };
 
 /**
@@ -99,7 +99,7 @@ function getMemberstackPublicKey() {
   if (publicKey.includes('PLACEHOLDER')) {
     if (env === 'local') {
       console.warn(`⚠️ Memberstack public key not set for local development.`);
-      console.warn(`   Temporarily paste your CT_MEMBERSTACK_LOCAL_PUBLIC_KEY on the 'local:' line in config.js`);
+      console.warn(`   Temporarily paste your CM_MEMBERSTACK_LOCAL_PUBLIC_KEY on the 'local:' line in config.js`);
     } else {
       console.warn(`⚠️ ${env.toUpperCase()} Memberstack public key not configured yet!`);
       console.warn(`   This should be injected automatically during deployment.`);

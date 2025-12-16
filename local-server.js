@@ -13,19 +13,19 @@ require('dotenv').config();
 
 // Map environment-specific keys to what the Lambda handler expects
 // For local development, use the LOCAL keys
-if (process.env.CT_MEMBERSTACK_LOCAL_SECRET_KEY && !process.env.MEMBERSTACK_SECRET_KEY) {
-  process.env.MEMBERSTACK_SECRET_KEY = process.env.CT_MEMBERSTACK_LOCAL_SECRET_KEY;
+if (process.env.CM_MEMBERSTACK_LOCAL_SECRET_KEY && !process.env.MEMBERSTACK_SECRET_KEY) {
+  process.env.MEMBERSTACK_SECRET_KEY = process.env.CM_MEMBERSTACK_LOCAL_SECRET_KEY;
 }
-if (process.env.CT_MEMBERSTACK_LOCAL_PUBLIC_KEY && !process.env.MEMBERSTACK_PUBLIC_KEY) {
-  process.env.MEMBERSTACK_PUBLIC_KEY = process.env.CT_MEMBERSTACK_LOCAL_PUBLIC_KEY;
+if (process.env.CM_MEMBERSTACK_LOCAL_PUBLIC_KEY && !process.env.MEMBERSTACK_PUBLIC_KEY) {
+  process.env.MEMBERSTACK_PUBLIC_KEY = process.env.CM_MEMBERSTACK_LOCAL_PUBLIC_KEY;
 }
 
 const http = require('http');
 const url = require('url');
 const { handler } = require('./src/lambda/handler');
 
-const PORT = process.env.CT_PORT || process.env.PORT || 3001;
-const HOST = process.env.CT_HOST || process.env.HOST || 'localhost';
+const PORT = process.env.CM_PORT || process.env.PORT || 3001;
+const HOST = process.env.CM_HOST || process.env.HOST || 'localhost';
 
 /**
  * Create a simple HTTP server that simulates API Gateway
