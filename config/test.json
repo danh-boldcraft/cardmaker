@@ -1,6 +1,6 @@
 {
   "environment": "test",
-  "stackName": "MultiplyStack-Test",
+  "stackName": "CardmakerStack-Test",
   "description": "Test environment - AWS deployment for testing",
   "aws": {
     "region": "us-west-2",
@@ -23,7 +23,7 @@
   },
   "cloudfront": {
     "priceClass": "PriceClass_100",
-    "comment": "Test environment - Multiply Service"
+    "comment": "Test environment - Cardmaker Service"
   },
   "features": {
     "debugMode": true,

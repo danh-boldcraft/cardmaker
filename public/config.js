@@ -15,8 +15,8 @@
 // Environment-specific API endpoints
 const API_ENDPOINTS = {
   local: 'http://localhost:3001/multiply',
-  test: 'REPLACE_WITH_TEST_API_ENDPOINT',  // Test environment - update after deployment
-  prod: 'REPLACE_WITH_PROD_API_ENDPOINT'   // Production environment - update after deployment
+  test: 'https://imjd82jn21.execute-api.us-west-2.amazonaws.com/api/multiply',  // Test environment
+  prod: 'https://1injnhd53d.execute-api.us-west-2.amazonaws.com/api/multiply'   // Production environment
 };
 
 // Environment-specific Memberstack public keys
@@ -35,8 +35,8 @@ const MEMBERSTACK_PUBLIC_KEYS = {
 
 // CloudFront domain mappings (to detect environment)
 const CLOUDFRONT_DOMAINS = {
-  test: 'REPLACE_WITH_TEST_CLOUDFRONT_DOMAIN',  // Test environment CloudFront - update after deployment
-  prod: 'REPLACE_WITH_PROD_CLOUDFRONT_DOMAIN'   // Production environment CloudFront - update after deployment
+  test: 'd1km502pp6onh8.cloudfront.net',  // Test environment CloudFront
+  prod: 'd1tc1pwgiayrtm.cloudfront.net'   // Production environment CloudFront
 };
 
 /**

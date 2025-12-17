@@ -6,7 +6,7 @@ require('dotenv').config();
 // This file is used for deployment.
 // npm scripts set DEPLOY_ENV. CDK auto-detects AWS account/region from your AWS CLI config.
 const cdk = require('aws-cdk-lib');
-const { MultiplyStack } = require('../lib/multiply-stack');
+const { CardmakerStack } = require('../lib/cardmaker-stack');
 const fs = require('fs');
 const path = require('path');
 
@@ -26,7 +26,7 @@ if (!fs.existsSync(configPath)) {
 const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
 
 // Create stack with environment-specific name
-new MultiplyStack(app, config.stackName, {
+new CardmakerStack(app, config.stackName, {
   env: {
     account: process.env.CDK_DEFAULT_ACCOUNT || config.aws?.account,
     region: process.env.CDK_DEFAULT_REGION || config.aws?.region || 'us-west-2'
