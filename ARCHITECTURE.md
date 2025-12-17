@@ -260,12 +260,15 @@ flowchart TD
     Error401 --> DisplayError
     ReturnSuccess --> DisplayInfo[Display Member Info on Page]
 
-    style Start fill:#4299E1
-    style DisplayInfo fill:#48BB78
-    style DisplayError fill:#F56565
-    style CheckAuth fill:#ED8936
-    style TokenValid fill:#ED8936
-    style RateCheck fill:#ED8936
+    classDef startNode fill:#4299E1,stroke:#2B6CB0,color:#fff
+    classDef successNode fill:#48BB78,stroke:#22543D,color:#fff
+    classDef errorNode fill:#F56565,stroke:#742A2A,color:#fff
+    classDef decisionNode fill:#ED8936,stroke:#744210,color:#fff
+
+    class Start startNode
+    class DisplayInfo successNode
+    class DisplayError errorNode
+    class CheckAuth,TokenValid,RateCheck decisionNode
 ```
 
 ## AWS Resource Details
