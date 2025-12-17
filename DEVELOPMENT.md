@@ -142,17 +142,25 @@ This project supports three separate environments:
 
 ### Test Environment
 - **Purpose**: AWS-based testing before production
-- **Infrastructure**: Separate AWS stack (`MultiplyStack-Test`)
+- **Infrastructure**: Separate AWS stack (`CardmakerStack-Test`)
 - **Configuration**: `config/test.json`
 - **Commands**: `npm run deploy:test`, `npm run destroy:test`
-- **Secrets**: Set via environment variables (CM_MEMBERSTACK_PUBLIC_KEY, CM_MEMBERSTACK_SECRET_KEY)
+- **Secrets**: Set via environment variables (CM_MEMBERSTACK_TEST_PUBLIC_KEY, CM_MEMBERSTACK_TEST_SECRET_KEY)
+- **Deployed URLs:**
+  - Website: https://d1km502pp6onh8.cloudfront.net
+  - API: https://imjd82jn21.execute-api.us-west-2.amazonaws.com/api/
+  - Multiply Endpoint: https://imjd82jn21.execute-api.us-west-2.amazonaws.com/api/multiply
 
 ### Production Environment
 - **Purpose**: Live production deployment
-- **Infrastructure**: Separate AWS stack (`MultiplyStack-Prod`)
+- **Infrastructure**: Separate AWS stack (`CardmakerStack-Prod`)
 - **Configuration**: `config/prod.json`
 - **Commands**: `npm run deploy:prod`, `npm run destroy:prod`
 - **Secrets**: Set via environment variables with production keys
+- **Deployed URLs:**
+  - Website: https://d1tc1pwgiayrtm.cloudfront.net
+  - API: https://1injnhd53d.execute-api.us-west-2.amazonaws.com/api/
+  - Multiply Endpoint: https://1injnhd53d.execute-api.us-west-2.amazonaws.com/api/multiply
 
 ### Environment Variables
 
@@ -515,7 +523,7 @@ The API is rate-limited to 10 requests/second per endpoint. This is normal prote
 │   └── lambda/
 │       └── handler.js     # Backend Lambda function
 ├── lib/
-│   └── multiply-stack.js  # CDK infrastructure definition
+│   └── cardmaker-stack.js  # CDK infrastructure definition
 ├── bin/
 │   └── app.js             # CDK app entry point
 ├── config/                # Environment configs

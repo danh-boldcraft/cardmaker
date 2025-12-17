@@ -1,6 +1,6 @@
 {
   "environment": "production",
-  "stackName": "MultiplyStack-Prod",
+  "stackName": "CardmakerStack-Prod",
   "description": "Production environment - LIVE deployment",
   "aws": {
     "region": "us-west-2",
@@ -23,7 +23,7 @@
   },
   "cloudfront": {
     "priceClass": "PriceClass_All",
-    "comment": "Production - Multiply Service"
+    "comment": "Production - Cardmaker Service"
   },
   "features": {
     "debugMode": false,
