@@ -146,10 +146,15 @@ graph LR
     ProdAPI --> ProdLambda
     ProdLambda -->|Live Keys| MSLive
 
-    style Local fill:#90CDF4,stroke:#2C5282
-    style Test fill:#FBD38D,stroke:#744210
-    style Prod fill:#9AE6B4,stroke:#22543D
-    style MS fill:#DDD6FE,stroke:#5B21B6
+    classDef localStyle fill:#90CDF4,stroke:#2C5282
+    classDef testStyle fill:#FBD38D,stroke:#744210
+    classDef prodStyle fill:#9AE6B4,stroke:#22543D
+    classDef msStyle fill:#DDD6FE,stroke:#5B21B6
+
+    class Local localStyle
+    class Test testStyle
+    class Prod prodStyle
+    class MS msStyle
 ```
 
 ## Security Architecture
@@ -171,7 +176,8 @@ graph TB
     JWT --> EnvVars
     EnvVars -.->|Developer Practice| GitHooks
 
-    style Security fill:#FED7D7,stroke:#742A2A
+    classDef securityStyle fill:#FED7D7,stroke:#742A2A
+    class Security securityStyle
 ```
 
 **Security Features**:
@@ -251,7 +257,7 @@ flowchart TD
     VerifyToken --> TokenValid{Token Valid?}
 
     TokenValid -->|No| Error401[Return 401 Unauthorized]
-    TokenValid -->|Yes| GetMemberData[GET /members/{id}<br/>from Memberstack]
+    TokenValid -->|Yes| GetMemberData["GET /members/(id)<br/>from Memberstack"]
 
     GetMemberData --> FilterData[Filter Member Data<br/>email, name, plans]
     FilterData --> ReturnSuccess[Return 200 + Member Info]
@@ -450,7 +456,8 @@ graph LR
     API3["API Gateway"] --> APILogs
     CF3["CloudFront"] -.->|Optional| CFLogs
 
-    style Logs fill:#FEEBC8,stroke:#744210
+    classDef logsStyle fill:#FEEBC8,stroke:#744210
+    class Logs logsStyle
 ```
 
 **Logging Levels by Environment**:
