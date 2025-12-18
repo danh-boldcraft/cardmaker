@@ -40,7 +40,7 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
 ### Phase 0: Shopify & AWS Prerequisites
 **Manual steps (UI-based):**
 
-1. **Create Shopify Private App:**
+1. **Create Shopify Custom App:**
    - Go to Shopify Admin → Settings → Apps and sales channels → Develop apps
    - Create new app called "Cardmaker POC"
    - Configure Admin API scopes: `write_draft_orders`, `read_orders`, `read_products`
@@ -121,7 +121,7 @@ Response: { "imageId": "uuid", "imageUrl": "presigned-url", "expiresAt": "ISO860
 
 **Shopify Setup Required:**
 1. Create "Custom Greeting Card" product in Shopify admin
-2. Create Shopify private app for Admin API access
+2. Create Shopify custom app for Admin API access
 3. Configure Gooten app to read line item image URL property
 
 **API: POST /checkout**
