@@ -59,5 +59,26 @@ Before searching the web for Memberstack information, always check local docs fi
 - `DEPLOY_ENV` env var selects environment (default: test)
 - Frontend auto-detects environment by hostname
 
-## Important Files to Update After Deployment
-- `public/config.js` - Add new API endpoints and CloudFront domains
+Setting up a new worktree:
+
+### Git worktress
+```
+1. Create worktree
+git worktree add ../cardmaker-feature-name -b feature/feature-name
+
+2. Switch to worktree
+cd ../cardmaker-feature-name
+
+3. Install dependencies
+npm install
+
+# 4. Ask user if they want to copy the .env and/or .claude/settings.local.json file from an existing branch to the new one.
+```
+
+
+## Important Files to Update When Infrastructure Changes
+- `public/config.js` - Update only when:
+  - New API Gateway endpoints are created (update `API_ENDPOINTS`)
+  - CloudFront distributions are created or domains change (update `CLOUDFRONT_DOMAINS`)
+  - Note: Memberstack keys are automatically injected during deployment and don't require manual updates
+  - Most deployments don't require changes to this file
