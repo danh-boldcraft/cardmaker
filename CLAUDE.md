@@ -22,20 +22,19 @@ rg and fd are faster and respect .gitignore automatically.
 - Help Center (UI walkthrough): https://help.shopify.com/en
 
 ### Local Documentation Files
-We are not sure if we'll use memberstack but if we need docs for it, here's how to find them:
-Before searching the web for information about Memberstack,
-always check the local .md docs first, located in:
 
-Always reference the official Memberstack documentation:
-- DomPackage: `./docs/memberstack--dom-package/`
-- Admin Node.js package: `./docs/mememberstack--admin-node-package/`
-- Admin REST API: `./docs/memberstack--admin-rest-api/`
+#### Memberstack (Currently Implemented)
+Memberstack authentication is implemented in the current codebase. Local documentation is available:
+- DomPackage: `./docs/memberstack/memberstack--dom-package/`
+- Admin Node.js package: `./docs/memberstack/memberstack--admin-node-package/`
+- Admin REST API: `./docs/memberstack/memberstack--admin-rest-api/`
 
-When answering questions about [specific topics], reference these local files
-by reading them directly instead of performing web searches.
+Before searching the web for Memberstack information, always check local docs first.
+
+**Note**: The v0.1 POC (cardmaker features) uses WAF IP allowlist for access control and does not require Memberstack. Memberstack integration remains in the codebase for potential future features.
 
 ## How to Use Local Docs
-1. First check the local HTML files in the documentation directory
+1. First check the local documentation files in the `docs/` directory
 2. Only search the web if information is not found locally
 3. The local documentation is authoritative for this project
 

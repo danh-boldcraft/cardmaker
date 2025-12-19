@@ -1,6 +1,8 @@
 # Cardmaker
 
-An art creation platform with AI image generation APIs, featuring a web frontend and backend API deployed on AWS.
+A greeting card creation platform with AI image generation. Currently in planning phase for v0.1 POC. Includes AWS-deployed serverless infrastructure foundation with Shopify checkout and Printify fulfillment integration planned.
+
+**Current Status**: Infrastructure foundation implemented (Lambda, API Gateway, CloudFront, S3). AI card generation features in planning phase (see `/features/feature-plans/`).
 
 ## Features
 

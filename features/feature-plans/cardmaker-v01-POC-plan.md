@@ -10,7 +10,7 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
                                       → API Gateway → Lambda
                                                         ├── /generate-card → Bedrock → S3 (Images)
                                                         ├── /checkout → Shopify Draft Order
-                                                        └── /webhooks/shopify → Printify API
+                                                        └── /webhooks/shopify/orders/paid → Printify API
 ```
 
 ## Key Decisions
@@ -19,6 +19,7 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
 - **Fulfillment**: Printify API via Shopify webhooks (fully automated)
 - **Access Control**: AWS WAF IP allowlist on CloudFront
 - **Image Generation**: AWS Bedrock Titan Image Generator (modular for future swap)
+- **Authentication**: None for POC (WAF IP allowlist only). Memberstack integration remains in codebase but is orthogonal to card generation features.
 
 ## Fulfillment Approach: Printify + Shopify Hybrid
 
@@ -35,6 +36,16 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
 3. On payment → Shopify webhook triggers Lambda
 4. Lambda submits order to Printify API with image URL
 5. Printify auto-fulfills (prints & ships card)
+
+**Architecture Decision: Custom Frontend vs Webflow**
+
+For the POC, we're building a custom lightweight frontend (S3 + CloudFront) instead of using Webflow + Smootify because:
+- **Full API control**: Direct integration with our Lambda backend
+- **Simplicity**: No third-party dependencies for POC testing
+- **Speed**: Faster iteration during development
+- **Cost**: No Smootify subscription needed for POC
+
+Note: Future versions may integrate with Webflow for production marketing site.
 
 ---
 
@@ -79,9 +90,10 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
 
 ### Phase 1: Infrastructure Setup
 **Files to modify/create:**
-- `/lib/cardmaker-stack.js` - Add S3 image bucket, WAF WebACL, Bedrock permissions
+- `/lib/cardmaker-stack.js` - Add S3 image bucket, WAF WebACL, DynamoDB usage table, Bedrock permissions
 - `/lib/constructs/image-bucket.js` (new) - S3 bucket with 48hr lifecycle
 - `/lib/constructs/waf-ip-allowlist.js` (new) - WAF IP set and WebACL
+- `/lib/constructs/usage-limits-table.js` (new) - DynamoDB table for daily usage counters
 - `/config/test.json`, `/config/prod.json` - Add `allowedIPs`, `maxDailyGenerations`, `maxDailyOrders`
 - `/.env.example` - Add new env vars
 

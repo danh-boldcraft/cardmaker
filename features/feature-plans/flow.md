@@ -148,7 +148,7 @@
 │  S3 Bucket   │  │ API Gateway  │
 │  (Frontend)  │  │  (Backend)   │
 │ index.html   │  └──────┬───────┘
-│ card-gen.js  │         │
+│ card-generator.js │     │
 │ styles.css   │         │ Route dispatch
 └──────────────┘         │
                          ↓

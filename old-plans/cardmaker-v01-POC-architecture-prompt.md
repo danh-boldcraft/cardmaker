@@ -1,3 +1,5 @@
+This is an original, out of date prompt. Keeping it here for reference but please ignore specifics e.g gooten and webflow.
+
 We're building a product that lets a user request images be generated for greeing cards and iterate on them. This is v0.1, the Proof of Concept version, but I will make high-level notes about future versions here.
 
 Let's build a high-level architecture for this product.
