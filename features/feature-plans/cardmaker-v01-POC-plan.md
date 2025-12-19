@@ -1,7 +1,7 @@
 # Cardmaker v0.1 POC Implementation Plan
 
 ## Overview
-Build a POC allowing users to generate AI greeting card images and purchase them via Shopify/Gooten fulfillment.
+Build a POC allowing users to generate AI greeting card images and purchase them via Shopify checkout with automated Printify fulfillment.
 
 ## Architecture Summary
 
@@ -10,34 +10,37 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
                                       → API Gateway → Lambda
                                                         ├── /generate-card → Bedrock → S3 (Images)
                                                         ├── /checkout → Shopify Draft Order
-                                                        └── /order-status → Shopify Order API
+                                                        └── /webhooks/shopify → Printify API
 ```
 
 ## Key Decisions
 - **Image Storage**: S3 with 48-hour lifecycle expiration
-- **Checkout**: Shopify Draft Order API → Gooten Shopify App (leverages existing infrastructure)
+- **Checkout**: Shopify Draft Order API (trusted payment flow)
+- **Fulfillment**: Printify API via Shopify webhooks (fully automated)
 - **Access Control**: AWS WAF IP allowlist on CloudFront
 - **Image Generation**: AWS Bedrock Titan Image Generator (modular for future swap)
 
-## Checkout Approach: Shopify + Gooten App
+## Fulfillment Approach: Printify + Shopify Hybrid
 
-**Why Shopify over Direct Gooten API:**
-- Leverages existing Shopify store and payment infrastructure
-- Gooten app (already available) auto-fulfills paid orders
-- No need to build payment integration
-- Customer trust with familiar checkout
-- Easy guardrails via Shopify order limits
+**Why Printify over Gooten:**
+- **Fully automated**: No manual image upload needed
+- **Direct API**: Submit orders with custom image URLs
+- **Webhook support**: Real-time order status updates
+- **Well-documented**: Comprehensive REST API
+- **Shopify integration**: Keeps familiar checkout flow
 
 **Flow:**
 1. User clicks "Buy" → Lambda creates Shopify Draft Order with image URL in line item properties
 2. User redirected to Shopify checkout
-3. On payment, Gooten app auto-fulfills
+3. On payment → Shopify webhook triggers Lambda
+4. Lambda submits order to Printify API with image URL
+5. Printify auto-fulfills (prints & ships card)
 
 ---
 
 ## Implementation Phases
 
-### Phase 0: Shopify & AWS Prerequisites
+### Phase 0: Shopify, Printify & AWS Prerequisites
 **Manual steps (UI-based):**
 
 1. **Create Shopify Custom App:**
@@ -50,11 +53,15 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
    - Go to Products → Add product
    - Name: "Custom AI Greeting Card"
    - Set price (e.g., $12.99)
-   - Copy the product ID (from URL: `/products/[ID]`)
+   - Disable inventory tracking (print-on-demand)
+   - Copy the product ID (from URL or use GraphQL ID)
 
-3. **Verify Gooten App:**
-   - Confirm Gooten app is installed in Shopify
-   - Map the custom card product to Gooten's 5x7 card SKU
+3. **Setup Printify Account:**
+   - Create account at [printify.com](https://printify.com)
+   - Go to Account → API
+   - Generate API key and copy it
+   - Note your Shop ID
+   - Find greeting card blueprint ID (5x7 card product)
 
 4. **Enable AWS Bedrock Model:**
    - Go to AWS Console → Bedrock → Model access (us-west-2)
@@ -62,6 +69,13 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
 
 5. **Get Your IP Address:**
    - Run `curl ifconfig.me` to get your public IP for WAF allowlist
+
+6. **Configure Shopify Webhook (after deployment):**
+   - Settings → Notifications → Webhooks → Create webhook
+   - Event: `Order payment`
+   - Format: JSON
+   - URL: `{API_GATEWAY_URL}/webhooks/shopify/orders/paid`
+   - Copy webhook signing secret
 
 ### Phase 1: Infrastructure Setup
 **Files to modify/create:**
@@ -72,13 +86,22 @@ User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
 - `/.env.example` - Add new env vars
 
 **New Environment Variables:**
-```
-CM_ALLOWED_IPS=x.x.x.x/32,y.y.y.y/32
+```bash
+# Security & Guardrails
+CM_ALLOWED_IPS=YOUR.IP.ADDRESS.HERE/32
 CM_MAX_DAILY_GENERATIONS=50
 CM_MAX_DAILY_ORDERS=10
-CM_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-CM_SHOPIFY_ACCESS_TOKEN=shpat_xxx
-CM_SHOPIFY_CARD_PRODUCT_ID=gid://shopify/Product/xxx
+
+# Shopify Integration
+CM_SHOPIFY_STORE_DOMAIN=YOUR_STORE.myshopify.com
+CM_SHOPIFY_ACCESS_TOKEN=shpat_YOUR_TOKEN_HERE
+CM_SHOPIFY_CARD_PRODUCT_ID=gid://shopify/Product/YOUR_PRODUCT_ID
+CM_SHOPIFY_WEBHOOK_SECRET=YOUR_WEBHOOK_SECRET_HERE
+
+# Printify Integration
+CM_PRINTIFY_API_KEY=YOUR_PRINTIFY_API_KEY_HERE
+CM_PRINTIFY_SHOP_ID=YOUR_SHOP_ID_HERE
+CM_PRINTIFY_CARD_BLUEPRINT_ID=YOUR_GREETING_CARD_BLUEPRINT_ID
 ```
 
 ### Phase 2: Image Generation Service
@@ -113,22 +136,95 @@ Response: { "imageId": "uuid", "imageUrl": "presigned-url", "expiresAt": "ISO860
 4. "Buy This Card" button
 5. Shipping address form (name, address, city, state, zip, country)
 
-### Phase 4: Checkout Integration
+### Phase 4: Checkout & Fulfillment Integration
+
+#### Part A: Shopify Checkout
 **Files to create:**
 - `/src/lambda/services/shopify-service.js` - Draft Order creation
 - `/src/lambda/handlers/checkout.js` - Checkout endpoint
-- `/src/lambda/handlers/order-status.js` - Order status lookup
-
-**Shopify Setup Required:**
-1. Create "Custom Greeting Card" product in Shopify admin
-2. Create Shopify custom app for Admin API access
-3. Configure Gooten app to read line item image URL property
 
 **API: POST /checkout**
 ```json
-Request:  { "imageId": "uuid", "shippingAddress": {...}, "email": "..." }
-Response: { "orderId": "...", "checkoutUrl": "shopify-checkout-url" }
+Request:  {
+  "imageId": "uuid",
+  "shippingAddress": {...},
+  "email": "..."
+}
+Response: {
+  "orderId": "shopify-draft-123",
+  "checkoutUrl": "https://getbrocards.myshopify.com/..."
+}
 ```
+
+**Implementation:**
+- Create Shopify Draft Order via Admin API
+- Store image URL in line item properties:
+  ```json
+  {
+    "properties": [
+      {"name": "Card Image URL", "value": "https://s3.../card.png"},
+      {"name": "Card Image ID", "value": "uuid"}
+    ]
+  }
+  ```
+
+#### Part B: Webhook Handler (Automated Fulfillment)
+**Files to create:**
+- `/src/lambda/handlers/shopify-webhook.js` - Webhook receiver & validator
+- `/src/lambda/utils/shopify-hmac.js` - HMAC signature verification
+
+**API: POST /webhooks/shopify/orders/paid**
+```json
+Shopify sends:
+{
+  "id": 5678901234,
+  "email": "customer@example.com",
+  "line_items": [{
+    "properties": [
+      {"name": "Card Image URL", "value": "https://s3.../card.png"}
+    ]
+  }],
+  "shipping_address": {...}
+}
+```
+
+**Implementation:**
+1. Verify HMAC signature (security)
+2. Extract image URL from line item properties
+3. Call Printify service to submit order
+
+#### Part C: Printify Integration
+**Files to create:**
+- `/src/lambda/services/printify-service.js` - Printify API order submission
+- `/src/lambda/utils/printify-client.js` - HTTP client for Printify API
+
+**Printify API Call:**
+```javascript
+POST https://api.printify.com/v1/shops/{shop_id}/orders.json
+Headers: { Authorization: `Bearer ${CM_PRINTIFY_API_KEY}` }
+Body: {
+  "external_id": "shopify-5678901234",
+  "line_items": [{
+    "product_id": "${CM_PRINTIFY_CARD_BLUEPRINT_ID}",
+    "variant_id": "{5x7_variant_id}",
+    "quantity": 1,
+    "print_areas": {
+      "front": "https://s3.../card.png"  // AI-generated image URL
+    }
+  }],
+  "shipping_method": 1,
+  "address_to": {
+    "first_name": "...",
+    "last_name": "...",
+    // ... shipping address from Shopify
+  }
+}
+```
+
+#### Part D: Order Status (Optional for POC)
+**Files to create (if needed):**
+- `/src/lambda/handlers/printify-webhook.js` - Printify status updates
+- `/src/lambda/handlers/order-status.js` - Status lookup endpoint
 
 ### Phase 5: Guardrails & Testing
 **Files to create:**
@@ -151,28 +247,54 @@ Response: { "orderId": "...", "checkoutUrl": "shopify-checkout-url" }
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `/lib/cardmaker-stack.js` | Modify | Add S3 bucket, WAF, Bedrock perms, new routes |
-| `/src/lambda/handler.js` | Modify | Add route dispatch for new endpoints |
+| `/lib/cardmaker-stack.js` | Modify | Add S3 bucket, WAF, Bedrock perms, webhook routes |
+| `/src/lambda/handler.js` | Modify | Add route dispatch for endpoints + webhooks |
 | `/src/lambda/services/bedrock-image-service.js` | Create | Modular image generation |
 | `/src/lambda/services/shopify-service.js` | Create | Shopify Draft Order API |
+| `/src/lambda/services/printify-service.js` | **Create** | Printify order submission API |
+| `/src/lambda/utils/printify-client.js` | **Create** | Printify HTTP client |
 | `/src/lambda/handlers/generate-card.js` | Create | Image generation endpoint |
 | `/src/lambda/handlers/checkout.js` | Create | Checkout endpoint |
+| `/src/lambda/handlers/shopify-webhook.js` | **Create** | Shopify webhook receiver |
+| `/src/lambda/utils/shopify-hmac.js` | **Create** | Webhook HMAC verification |
 | `/public/index.html` | Modify | Add card generator UI |
 | `/public/card-generator.js` | Create | Frontend generation logic |
 | `/public/config.js` | Modify | Add new API endpoints |
-| `/.env.example` | Modify | Add Shopify/Bedrock/guardrail vars |
+| `/.env.example` | Modify | Add Shopify/Printify/Bedrock/guardrail vars |
 | `/config/test.json` | Modify | Add new config values |
 
 ---
 
 ## Testing Checklist
+
+### Image Generation
 - [ ] Generate card with various prompts
 - [ ] Verify 5x7 dimensions (1500x2100px)
 - [ ] Confirm S3 presigned URL works
-- [ ] Test Shopify checkout flow (test mode)
+- [ ] Test Bedrock fallback/error handling
+
+### Checkout Flow
+- [ ] Test Shopify draft order creation
+- [ ] Verify image URL stored in line item properties
+- [ ] Complete Shopify checkout (test mode)
+- [ ] Confirm redirect to Shopify works
+
+### Webhook & Fulfillment
+- [ ] Test Shopify webhook HMAC verification
+- [ ] Verify webhook receives orders/paid event
+- [ ] Test Printify API order submission
+- [ ] Confirm Printify receives correct image URL
+- [ ] Check Printify dashboard for order
+
+### Security & Guardrails
 - [ ] Verify IP allowlist blocks unauthorized access
-- [ ] Verify daily limits are enforced
-- [ ] Test rate limiting on /generate-card
+- [ ] Verify daily generation limit enforced (50/day)
+- [ ] Verify daily order limit enforced (10/day)
+- [ ] Test rate limiting on /generate-card (5/min)
+
+### End-to-End
+- [ ] Full flow: Generate → Checkout → Pay → Webhook → Printify
+- [ ] Verify card ships from Printify
 
 ---
 
