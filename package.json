@@ -15,6 +15,7 @@
     "synth": "cdk synth",
     "test": "node tests/lambda-handler.js",
     "test:watch": "nodemon --watch src tests/lambda-handler.js",
+    "test:infrastructure": "node tests/infrastructure-deployment.js",
     "test:frontend": "playwright test",
     "test:frontend:headed": "playwright test --headed",
     "test:frontend:slow": "cross-env SLOW_MO=1000 playwright test --headed",
@@ -38,6 +39,8 @@
     "constructs": "^10.3.0"
   },
   "devDependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.955.0",
+    "@aws-sdk/client-s3": "^3.955.0",
     "@playwright/test": "^1.56.1",
     "aws-cdk": "^2.120.0",
     "concurrently": "^8.2.1",
