@@ -1,4 +1,5 @@
 # Cardmaker Infrastructure Architecture
+View these diagrams on Github
 
 ## Overview
 Cardmaker is a serverless art creation platform deployed on AWS with Memberstack authentication integration.

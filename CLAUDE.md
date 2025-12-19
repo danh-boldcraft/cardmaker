@@ -11,9 +11,18 @@ This file provides guidance to Claude Code when working with the Cardmaker proje
 </search-behavior>
 rg and fd are faster and respect .gitignore automatically.
 
-## Memberstack Integration
+## Documentation
+### Printify (Backend Fulfillment)
+- Printify API Reference: https://developers.printify.com/api/reference
+- Printify Help Center: https://help.printify.com/hc/en-us
+
+### Shopify (Product Data & Checkout)
+- Admin API (coding): https://shopify.dev/docs/api/admin
+- Storefront API (coding): https://shopify.dev/docs/api/storefront
+- Help Center (UI walkthrough): https://help.shopify.com/en
 
 ### Local Documentation Files
+We are not sure if we'll use memberstack but if we need docs for it, here's how to find them:
 Before searching the web for information about Memberstack,
 always check the local .md docs first, located in:
 
@@ -26,11 +35,9 @@ When answering questions about [specific topics], reference these local files
 by reading them directly instead of performing web searches.
 
 ## How to Use Local Docs
-
 1. First check the local HTML files in the documentation directory
 2. Only search the web if information is not found locally
 3. The local documentation is authoritative for this project
-
 
 
 ## Environment Configuration
