@@ -31,5 +31,20 @@
   },
   "secrets": {
     "note": "Secrets are loaded from environment variables - set before deployment"
+  },
+  "guardrails": {
+    "maxDailyGenerations": 100,
+    "maxDailyOrders": 25,
+    "allowedIps": ["73.109.154.10/32", "50.125.91.217/32"]
+  },
+  "bedrock": {
+    "region": "us-west-2",
+    "imageModel": "amazon.titan-image-generator-v2:0",
+    "imageWidth": 1500,
+    "imageHeight": 2100,
+    "imageQuality": "premium"
+  },
+  "s3": {
+    "imageExpirationHours": 48
   }
 }

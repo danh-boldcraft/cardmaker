@@ -6,20 +6,26 @@ Build a POC allowing users to generate AI greeting card images and purchase them
 ## Architecture Summary
 
 ```
-User → WAF (IP Allowlist) → CloudFront → S3 (Frontend)
-                                      → API Gateway → Lambda
-                                                        ├── /generate-card → Bedrock → S3 (Images)
-                                                        ├── /checkout → Shopify Draft Order
-                                                        └── /webhooks/shopify/orders/paid → Printify API
+User → CloudFront → S3 (Frontend)
+    → API Gateway (IP Policy) → Lambda → Bedrock → S3 (Images)
+                                       → Shopify Draft Order
+                                       → Printify API (via webhook)
 ```
+
+**Flow:**
+1. User loads frontend from CloudFront (publicly accessible)
+2. User generates card → API Gateway checks IP → Lambda calls Bedrock → Image stored in S3
+3. User clicks "Buy" → API Gateway checks IP → Lambda creates Shopify Draft Order
+4. User pays via Shopify → Webhook triggers Lambda → Lambda submits order to Printify
 
 ## Key Decisions
 - **Image Storage**: S3 with 48-hour lifecycle expiration
 - **Checkout**: Shopify Draft Order API (trusted payment flow)
 - **Fulfillment**: Printify API via Shopify webhooks (fully automated)
-- **Access Control**: AWS WAF IP allowlist on CloudFront
-- **Image Generation**: AWS Bedrock Titan Image Generator (modular for future swap)
-- **Authentication**: None for POC (WAF IP allowlist only). Memberstack integration remains in codebase but is orthogonal to card generation features.
+- **Access Control**: API Gateway IP restriction policy (Phase 1B - optional)
+- **Image Generation**: AWS Bedrock Titan Image Generator v2:0 (modular for future swap)
+- **Authentication**: None for POC. Memberstack integration remains in codebase but is orthogonal to card generation features.
+- **WAF**: Disabled for POC (requires us-east-1 cross-region stack for CloudFront)
 
 ## Fulfillment Approach: Printify + Shopify Hybrid
 
@@ -88,14 +94,99 @@ Note: Future versions may integrate with Webflow for production marketing site.
    - URL: `{API_GATEWAY_URL}/webhooks/shopify/orders/paid`
    - Copy webhook signing secret
 
-### Phase 1: Infrastructure Setup
-**Files to modify/create:**
-- `/lib/cardmaker-stack.js` - Add S3 image bucket, WAF WebACL, DynamoDB usage table, Bedrock permissions
-- `/lib/constructs/image-bucket.js` (new) - S3 bucket with 48hr lifecycle
-- `/lib/constructs/waf-ip-allowlist.js` (new) - WAF IP set and WebACL
-- `/lib/constructs/usage-limits-table.js` (new) - DynamoDB table for daily usage counters
-- `/config/test.json`, `/config/prod.json` - Add `allowedIPs`, `maxDailyGenerations`, `maxDailyOrders`
-- `/.env.example` - Add new env vars
+### Phase 1: Infrastructure Setup ✅ COMPLETED
+**Status:** Deployed to test environment
+
+**Files modified/created:**
+- `/lib/cardmaker-stack.js` - Added S3 image bucket, Bedrock permissions ✅
+- `/lib/constructs/image-bucket.js` (new) - S3 bucket with 48hr lifecycle ✅
+- `/lib/constructs/waf-ip-allowlist.js` (new) - Created but disabled (requires us-east-1 cross-region) ⚠️
+- `/config/test.json`, `/config/prod.json` - Added guardrails, Bedrock config ✅
+- `/.env.example` - Already had required env vars ✅
+
+**Deployed Resources:**
+- S3 bucket: `cardmaker-images-test` (48-hour auto-delete)
+- Lambda with Bedrock Titan Image Generator v2:0 permissions
+- API Gateway: `https://imjd82jn21.execute-api.us-west-2.amazonaws.com/api/`
+- CloudFront: `https://d1km502pp6onh8.cloudfront.net`
+
+**Deferred:**
+- WAF IP allowlist on CloudFront (requires us-east-1 cross-region stack)
+- DynamoDB usage limits table (will be added in Phase 5)
+
+---
+
+### Phase 1B: API Gateway IP Restriction (Alternative to WAF)
+**Purpose:** Restrict API access to whitelisted IPs without cross-region complexity
+
+**Files to modify:**
+- `/lib/cardmaker-stack.js` - Add resource policy to API Gateway
+
+**Implementation:**
+
+Add IP-based resource policy to API Gateway:
+
+```javascript
+// In cardmaker-stack.js, after creating the API Gateway RestApi
+
+// Add resource policy for IP restriction
+const ipRestrictionPolicy = new iam.PolicyDocument({
+  statements: [
+    new iam.PolicyStatement({
+      effect: iam.Effect.ALLOW,
+      principals: [new iam.AnyPrincipal()],
+      actions: ['execute-api:Invoke'],
+      resources: ['execute-api:/*'],
+      conditions: {
+        IpAddress: {
+          'aws:SourceIp': config.guardrails.allowedIps || []
+        }
+      }
+    }),
+    new iam.PolicyStatement({
+      effect: iam.Effect.DENY,
+      principals: [new iam.AnyPrincipal()],
+      actions: ['execute-api:Invoke'],
+      resources: ['execute-api:/*'],
+      conditions: {
+        NotIpAddress: {
+          'aws:SourceIp': config.guardrails.allowedIps || []
+        }
+      }
+    })
+  ]
+});
+
+api.addToResourcePolicy(ipRestrictionPolicy);
+```
+
+**What this does:**
+- Blocks API requests from IPs not in the allowlist
+- Returns 403 Forbidden for unauthorized IPs
+- Frontend (CloudFront) remains publicly accessible
+- API calls are blocked at AWS level (before hitting Lambda)
+
+**Security Model:**
+- **Frontend:** Anyone can load the webpage (HTML/JS/CSS)
+- **API Calls:** Only whitelisted IPs can successfully invoke endpoints
+- **Protection:** API throttling (10/sec) + daily limits (Phase 5) + IP restriction
+
+**Limitations:**
+- Doesn't block CloudFront access (only API calls)
+- If someone on whitelisted IP becomes malicious, they could script API calls
+- For production, recommend adding proper authentication (Memberstack/Cognito)
+
+**When to enable:** Before wider POC distribution or if IP-based access control is required
+
+**Deployment:**
+```bash
+npm run deploy:test
+```
+
+**Testing:**
+1. From whitelisted IP: API calls succeed
+2. From different IP (use VPN/mobile): API calls return 403
+3. CloudFront frontend loads for everyone (expected)
 
 **New Environment Variables:**
 ```bash
