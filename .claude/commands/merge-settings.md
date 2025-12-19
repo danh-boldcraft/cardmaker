@@ -1,0 +1,1 @@
+Review @.claude/settings.local.json for safe permissions and move those into @.claude/settings.json if they're not present already. Remove the items you've moved from @.claude/settings.local.json
