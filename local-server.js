@@ -20,6 +20,20 @@ if (process.env.CM_MEMBERSTACK_LOCAL_PUBLIC_KEY && !process.env.MEMBERSTACK_PUBL
   process.env.MEMBERSTACK_PUBLIC_KEY = process.env.CM_MEMBERSTACK_LOCAL_PUBLIC_KEY;
 }
 
+// Set up environment variables for card generation (required for local testing)
+// Note: /generate-card requires actual AWS resources (DynamoDB, S3, Bedrock)
+// For local testing, you can either:
+// 1. Deploy to test environment and use the test DynamoDB/S3
+// 2. Create local mocks for development
+process.env.ENVIRONMENT = process.env.ENVIRONMENT || 'local';
+process.env.DEBUG_MODE = process.env.DEBUG_MODE || 'true';
+process.env.BEDROCK_REGION = process.env.BEDROCK_REGION || 'us-west-2';
+process.env.BEDROCK_IMAGE_MODEL = process.env.BEDROCK_IMAGE_MODEL || 'amazon.titan-image-generator-v2:0';
+process.env.BEDROCK_IMAGE_WIDTH = process.env.BEDROCK_IMAGE_WIDTH || '1500';
+process.env.BEDROCK_IMAGE_HEIGHT = process.env.BEDROCK_IMAGE_HEIGHT || '2100';
+process.env.BEDROCK_IMAGE_QUALITY = process.env.BEDROCK_IMAGE_QUALITY || 'premium';
+process.env.MAX_DAILY_GENERATIONS = process.env.MAX_DAILY_GENERATIONS || '50';
+
 const http = require('http');
 const url = require('url');
 const { handler } = require('./src/lambda/handler');
@@ -48,10 +62,11 @@ const server = http.createServer((req, res) => {
   const parsedUrl = url.parse(req.url, true);
   const pathname = parsedUrl.pathname;
 
-  // Only handle POST requests to /multiply and /member-info
-  if (req.method !== 'POST' || (pathname !== '/multiply' && pathname !== '/member-info')) {
+  // Handle POST requests to API endpoints
+  const validPaths = ['/multiply', '/member-info', '/generate-card'];
+  if (req.method !== 'POST' || !validPaths.includes(pathname)) {
     res.writeHead(404, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Not found' }));
+    res.end(JSON.stringify({ error: 'Not found. Valid endpoints: ' + validPaths.join(', ') }));
     return;
   }
 
@@ -98,13 +113,20 @@ server.listen(PORT, HOST, () => {
   console.log(`\n🚀 Local API Server Running`);
   console.log(`────────────────────────────`);
   console.log(`URL:  http://${HOST}:${PORT}`);
-  console.log(`POST endpoint: http://${HOST}:${PORT}/multiply`);
-  console.log(`\n📝 Example request:`);
+  console.log(`\n📍 Endpoints:`);
+  console.log(`   POST /multiply       - Multiply a number by 3`);
+  console.log(`   POST /member-info    - Get member info (requires auth)`);
+  console.log(`   POST /generate-card  - Generate AI greeting card`);
+  console.log(`\n📝 Example requests:`);
   console.log(`curl -X POST http://localhost:3001/multiply \\`);
   console.log(`  -H "Content-Type: application/json" \\`);
   console.log(`  -d '{"number": 5}'`);
+  console.log(`\ncurl -X POST http://localhost:3001/generate-card \\`);
+  console.log(`  -H "Content-Type: application/json" \\`);
+  console.log(`  -d '{"prompt": "sunset over mountains"}'`);
+  console.log(`\n⚠️  Note: /generate-card requires AWS credentials and resources`);
+  console.log(`   (DynamoDB, S3, Bedrock access). Deploy to test for full testing.`);
   console.log(`\n🔍 Debugging: Set breakpoints in src/lambda/handler.js`);
-  console.log(`💡 Update public/config.js to use: http://localhost:3001/multiply`);
   console.log(`\nPress Ctrl+C to stop\n`);
 });
 

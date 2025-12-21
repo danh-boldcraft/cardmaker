@@ -1,4 +1,5 @@
 const https = require('https');
+const { handleGenerateCard } = require('./handlers/generate-card');
 
 function memberstackRequest(path, method, body, secretKey) {
   return new Promise((resolve, reject) => {
@@ -104,6 +105,10 @@ exports.handler = async (event) => {
 
     if (path === '/member-info') {
         return handleMemberInfo(event);
+    }
+
+    if (path === '/generate-card') {
+        return handleGenerateCard(event);
     }
 
     // Original multiply logic continues below...

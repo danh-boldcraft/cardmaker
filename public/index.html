@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiply by 3 Service</title>
+    <title>Cardmaker - AI Greeting Cards</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Memberstack DOM Package - loaded as ES module for programmatic initialization -->
 </head>
@@ -15,7 +15,7 @@
     <!-- Auth Navbar -->
     <nav id="authNavbar" class="auth-navbar">
         <div class="nav-content">
-            <div class="nav-brand">Multiply App</div>
+            <div class="nav-brand">Cardmaker</div>
             <div class="nav-auth">
                 <!-- Logged out state -->
                 <div id="loggedOutButtons" class="auth-buttons">
@@ -46,7 +46,48 @@
     </div>
 
     <div class="container">
-        <div class="card">
+        <!-- Card Generator Section -->
+        <div class="card card-generator-section">
+            <h1>Create Your AI Greeting Card</h1>
+            <p class="subtitle">Describe your perfect card and let AI bring it to life</p>
+
+            <div class="input-group">
+                <label for="cardPrompt">Describe your card:</label>
+                <textarea
+                    id="cardPrompt"
+                    name="prompt"
+                    placeholder="e.g., A beautiful sunset over mountains with 'Happy Birthday' text in elegant gold letters"
+                    rows="3"
+                    maxlength="512"
+                ></textarea>
+                <div class="char-count"><span id="promptCharCount">0</span>/512</div>
+            </div>
+
+            <button type="button" id="generateBtn" class="generate-btn">
+                <span id="generateBtnText">Generate Card</span>
+                <span id="generateBtnLoader" class="loader hidden"></span>
+            </button>
+
+            <!-- Card Preview -->
+            <div id="cardPreview" class="card-preview hidden">
+                <h3>Your Generated Card</h3>
+                <div class="card-image-container">
+                    <img id="cardImage" alt="Generated greeting card" />
+                </div>
+                <p class="preview-note">Card dimensions: 5" x 7" (print-ready at 300 DPI)</p>
+            </div>
+
+            <!-- Card Generation Error -->
+            <div id="cardError" class="error hidden">
+                <div class="error-icon">⚠️</div>
+                <div id="cardErrorMessage"></div>
+            </div>
+
+            <div id="usageDisplay" class="usage-display"></div>
+        </div>
+
+        <!-- Multiply Section (Legacy Demo) -->
+        <div class="card multiply-section">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
                 <div>
                     <h1>Multiply by 3</h1>
@@ -95,6 +136,7 @@
     </div>
 
     <script src="config.js"></script>
+    <script src="card-generator.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>
