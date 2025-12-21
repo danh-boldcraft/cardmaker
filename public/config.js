@@ -12,7 +12,14 @@
  * After deploying test/prod, update the endpoints below with your CloudFront URLs
  */
 
-// Environment-specific API endpoints
+// Environment-specific API base URLs
+const API_BASE_URLS = {
+  local: 'http://localhost:3001',
+  test: 'https://imjd82jn21.execute-api.us-west-2.amazonaws.com/api',  // Test environment
+  prod: 'https://1injnhd53d.execute-api.us-west-2.amazonaws.com/api'   // Production environment
+};
+
+// Environment-specific API endpoints (legacy - for backward compatibility)
 const API_ENDPOINTS = {
   local: 'http://localhost:3001/multiply',
   test: 'https://imjd82jn21.execute-api.us-west-2.amazonaws.com/api/multiply',  // Test environment
@@ -73,7 +80,15 @@ function detectEnvironment() {
 }
 
 /**
- * Get API endpoint for current environment
+ * Get API base URL for current environment
+ */
+function getApiBaseUrl() {
+  const env = detectEnvironment();
+  return API_BASE_URLS[env];
+}
+
+/**
+ * Get API endpoint for current environment (legacy - multiply endpoint)
  */
 function getApiEndpoint() {
   const env = detectEnvironment();
@@ -112,7 +127,9 @@ function getMemberstackPublicKey() {
 // Global API configuration
 const API_CONFIG = {
   environment: detectEnvironment(),
-  endpoint: getApiEndpoint(),
+  baseUrl: getApiBaseUrl(),
+  endpoint: getApiEndpoint(),  // Legacy: multiply endpoint
+  generateCardEndpoint: `${getApiBaseUrl()}/generate-card`,
   memberstackPublicKey: getMemberstackPublicKey(),
   debug: detectEnvironment() !== 'prod'  // Debug mode for local and test
 };
@@ -121,7 +138,8 @@ const API_CONFIG = {
 if (API_CONFIG.debug) {
   console.log('🔧 API Configuration:');
   console.log('   Environment:', API_CONFIG.environment.toUpperCase());
-  console.log('   Endpoint:', API_CONFIG.endpoint);
+  console.log('   Base URL:', API_CONFIG.baseUrl);
+  console.log('   Generate Card:', API_CONFIG.generateCardEndpoint);
   console.log('   Memberstack Key:', API_CONFIG.memberstackPublicKey.substring(0, 10) + '...');
   console.log('   Debug mode: ON');
   if (API_CONFIG.environment === 'local') {

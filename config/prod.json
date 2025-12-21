@@ -7,8 +7,8 @@
     "account": "145023121294"
   },
   "lambda": {
-    "memorySize": 128,
-    "timeout": 10,
+    "memorySize": 256,
+    "timeout": 30,
     "reservedConcurrency": null
   },
   "apiGateway": {
@@ -40,8 +40,8 @@
   "bedrock": {
     "region": "us-west-2",
     "imageModel": "amazon.titan-image-generator-v2:0",
-    "imageWidth": 1500,
-    "imageHeight": 2100,
+    "imageWidth": 768,
+    "imageHeight": 1152,
     "imageQuality": "premium"
   },
   "s3": {

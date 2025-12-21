@@ -7,8 +7,8 @@
     "account": "145023121294"
   },
   "lambda": {
-    "memorySize": 128,
-    "timeout": 10,
+    "memorySize": 256,
+    "timeout": 30,
     "reservedConcurrency": null
   },
   "apiGateway": {
@@ -35,13 +35,13 @@
   "guardrails": {
     "maxDailyGenerations": 50,
     "maxDailyOrders": 10,
-    "allowedIps": ["73.109.154.10/32", "50.125.91.217/32"]
+    "allowedIps": ["73.109.154.10/32", "50.125.91.217/32", "44.247.167.41/32"]
   },
   "bedrock": {
     "region": "us-west-2",
     "imageModel": "amazon.titan-image-generator-v2:0",
-    "imageWidth": 1500,
-    "imageHeight": 2100,
+    "imageWidth": 768,
+    "imageHeight": 1152,
     "imageQuality": "premium"
   },
   "s3": {

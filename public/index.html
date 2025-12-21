@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multiply by 3 Service</title>
+    <title>Cardmaker - AI Greeting Cards</title>
     <link rel="stylesheet" href="styles.css">
     <!-- Memberstack DOM Package - loaded as ES module for programmatic initialization -->
 </head>
@@ -15,7 +15,7 @@
     <!-- Auth Navbar -->
     <nav id="authNavbar" class="auth-navbar">
         <div class="nav-content">
-            <div class="nav-brand">Multiply App</div>
+            <div class="nav-brand">Cardmaker</div>
             <div class="nav-auth">
                 <!-- Logged out state -->
                 <div id="loggedOutButtons" class="auth-buttons">
@@ -46,55 +46,53 @@
     </div>
 
     <div class="container">
-        <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                <div>
-                    <h1>Multiply by 3</h1>
-                    <p class="subtitle">Enter a number to multiply by 3</p>
-                </div>
-                <a href="breakout/index.html" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; transition: all 0.3s ease;">Play Breakout</a>
+        <!-- Card Generator Section -->
+        <div class="card card-generator-section">
+            <h1>Create Your AI Greeting Card</h1>
+            <p class="subtitle">Describe your perfect card and let AI bring it to life</p>
+
+            <div class="input-group">
+                <label for="cardPrompt">Describe your card:</label>
+                <textarea
+                    id="cardPrompt"
+                    name="prompt"
+                    placeholder="e.g., A beautiful sunset over mountains with 'Happy Birthday' text in elegant gold letters"
+                    rows="3"
+                    maxlength="512"
+                ></textarea>
+                <div class="char-count"><span id="promptCharCount">0</span>/512</div>
             </div>
 
-            <form id="multiplyForm">
-                <div class="input-group">
-                    <label for="numberInput">Enter a number:</label>
-                    <input
-                        type="number"
-                        id="numberInput"
-                        name="number"
-                        step="any"
-                        placeholder="e.g., 5 or 7.5"
-                        required
-                        autofocus
-                    >
-                </div>
+            <button type="button" id="generateBtn" class="generate-btn">
+                <span id="generateBtnText">Generate Card</span>
+                <span id="generateBtnLoader" class="loader hidden"></span>
+            </button>
 
-                <button type="submit" id="submitBtn">
-                    <span id="btnText">Multiply by 3</span>
-                    <span id="btnLoader" class="loader hidden"></span>
-                </button>
-            </form>
-
-            <div id="result" class="result hidden">
-                <div class="result-content">
-                    <div class="result-label">Result:</div>
-                    <div id="resultValue" class="result-value"></div>
-                    <div id="calculation" class="calculation"></div>
+            <!-- Card Preview -->
+            <div id="cardPreview" class="card-preview hidden">
+                <h3>Your Generated Card</h3>
+                <div class="card-image-container">
+                    <img id="cardImage" alt="Generated greeting card" />
                 </div>
+                <p class="preview-note">Card dimensions: 5" x 7" (print-ready at 300 DPI)</p>
             </div>
 
-            <div id="error" class="error hidden">
+            <!-- Card Generation Error -->
+            <div id="cardError" class="error hidden">
                 <div class="error-icon">⚠️</div>
-                <div id="errorMessage"></div>
+                <div id="cardErrorMessage"></div>
             </div>
+
+            <div id="usageDisplay" class="usage-display"></div>
         </div>
 
         <div class="footer">
-            <p>Powered by AWS Lambda + API Gateway</p>
+            <p>Powered by AWS Bedrock Titan + Lambda + API Gateway</p>
         </div>
     </div>
 
     <script src="config.js"></script>
+    <script src="card-generator.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>

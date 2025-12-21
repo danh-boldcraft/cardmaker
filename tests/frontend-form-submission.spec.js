@@ -1,15 +1,15 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
 
-test.describe('Frontend Form Submission', () => {
+test.describe('Backend Validation Test (Multiply by 3)', () => {
   test.beforeEach(async ({ page }) => {
-    // Navigate to the application
-    await page.goto('/');
+    // Navigate to the BVT page
+    await page.goto('/multiply.html');
   });
 
   test('should display the form correctly', async ({ page }) => {
     // Verify page title
-    await expect(page).toHaveTitle(/Multiply by 3 Service/);
+    await expect(page).toHaveTitle(/Multiply by 3/);
 
     // Verify form elements are visible
     await expect(page.locator('#numberInput')).toBeVisible();

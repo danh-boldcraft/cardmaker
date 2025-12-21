@@ -324,6 +324,131 @@ button[type="submit"]:disabled {
     opacity: 0.9;
 }
 
+/* Card Generator Section */
+.card-generator-section h1 {
+    font-size: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+textarea {
+    width: 100%;
+    padding: 15px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    outline: none;
+    resize: vertical;
+    min-height: 80px;
+}
+
+textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+textarea:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.char-count {
+    text-align: right;
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 5px;
+}
+
+.generate-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.generate-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+}
+
+.generate-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.generate-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Card Preview */
+.card-preview {
+    margin-top: 25px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.card-preview h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.card-image-container {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    display: inline-block;
+}
+
+.card-image-container img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+    /* 5x7 aspect ratio */
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.preview-note {
+    margin-top: 10px;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* Usage Display */
+.usage-display {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.usage-display.limit-reached {
+    color: #ef4444;
+    font-weight: 600;
+}
+
+/* Container adjustments */
+.container {
+    max-width: 700px;
+}
+
 /* Responsive design */
 @media (max-width: 600px) {
     .card {
@@ -334,7 +459,15 @@ button[type="submit"]:disabled {
         font-size: 2rem;
     }
 
+    .card-generator-section h1 {
+        font-size: 1.5rem;
+    }
+
     .result-value {
         font-size: 2.5rem;
+    }
+
+    .card-image-container img {
+        max-height: 300px;
     }
 }
