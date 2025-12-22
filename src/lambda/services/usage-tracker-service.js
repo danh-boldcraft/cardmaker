@@ -12,6 +12,7 @@ class UsageTrackerService {
     this.docClient = DynamoDBDocumentClient.from(client);
     this.tableName = process.env.USAGE_TABLE_NAME;
     this.maxDailyGenerations = parseInt(process.env.MAX_DAILY_GENERATIONS, 10) || 50;
+    this.maxDailyOrders = parseInt(process.env.MAX_DAILY_ORDERS, 10) || 10;
 
     if (!this.tableName) {
       throw new Error('USAGE_TABLE_NAME environment variable is required');
@@ -149,6 +150,127 @@ class UsageTrackerService {
         allowed: true,
         currentCount: 0,
         limit: this.maxDailyGenerations,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Check if more orders are allowed today
+   * @returns {Promise<{allowed: boolean, currentCount: number, limit: number}>}
+   */
+  async checkOrderLimit() {
+    const dateKey = this.getDateKey();
+
+    try {
+      const command = new GetCommand({
+        TableName: this.tableName,
+        Key: { dateKey }
+      });
+
+      const response = await this.docClient.send(command);
+      const currentCount = response.Item?.orderCount || 0;
+
+      return {
+        allowed: currentCount < this.maxDailyOrders,
+        currentCount,
+        limit: this.maxDailyOrders
+      };
+    } catch (error) {
+      console.error('Error checking order limit:', error);
+      // On error, allow the request but log it
+      return {
+        allowed: true,
+        currentCount: 0,
+        limit: this.maxDailyOrders,
+        error: error.message
+      };
+    }
+  }
+
+  /**
+   * Increment the order counter for today
+   * @returns {Promise<{newCount: number}>}
+   */
+  async incrementOrderCounter() {
+    const dateKey = this.getDateKey();
+    const ttl = this.getTtl();
+
+    try {
+      const command = new UpdateCommand({
+        TableName: this.tableName,
+        Key: { dateKey },
+        UpdateExpression: 'SET orderCount = if_not_exists(orderCount, :zero) + :inc, #ttl = :ttl',
+        ExpressionAttributeNames: {
+          '#ttl': 'ttl'
+        },
+        ExpressionAttributeValues: {
+          ':inc': 1,
+          ':zero': 0,
+          ':ttl': ttl
+        },
+        ReturnValues: 'UPDATED_NEW'
+      });
+
+      const response = await this.docClient.send(command);
+      return { newCount: response.Attributes.orderCount };
+    } catch (error) {
+      console.error('Error incrementing order counter:', error);
+      throw new Error(`Failed to update order counter: ${error.message}`);
+    }
+  }
+
+  /**
+   * Check order limit and increment in one atomic operation if allowed
+   * @returns {Promise<{allowed: boolean, currentCount: number, limit: number}>}
+   */
+  async checkAndIncrementOrder() {
+    const dateKey = this.getDateKey();
+    const ttl = this.getTtl();
+
+    try {
+      // Use conditional update to atomically check and increment
+      const command = new UpdateCommand({
+        TableName: this.tableName,
+        Key: { dateKey },
+        UpdateExpression: 'SET orderCount = if_not_exists(orderCount, :zero) + :inc, #ttl = :ttl',
+        ConditionExpression: 'attribute_not_exists(orderCount) OR orderCount < :limit',
+        ExpressionAttributeNames: {
+          '#ttl': 'ttl'
+        },
+        ExpressionAttributeValues: {
+          ':inc': 1,
+          ':zero': 0,
+          ':ttl': ttl,
+          ':limit': this.maxDailyOrders
+        },
+        ReturnValues: 'UPDATED_NEW'
+      });
+
+      const response = await this.docClient.send(command);
+      const newCount = response.Attributes.orderCount;
+
+      return {
+        allowed: true,
+        currentCount: newCount,
+        limit: this.maxDailyOrders
+      };
+    } catch (error) {
+      if (error.name === 'ConditionalCheckFailedException') {
+        // Limit exceeded - get current count
+        const checkResult = await this.checkOrderLimit();
+        return {
+          allowed: false,
+          currentCount: checkResult.currentCount,
+          limit: this.maxDailyOrders
+        };
+      }
+      console.error('Error in checkAndIncrementOrder:', error);
+      // On other errors, allow the request but log it
+      return {
+        allowed: true,
+        currentCount: 0,
+        limit: this.maxDailyOrders,
         error: error.message
       };
     }

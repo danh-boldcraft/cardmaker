@@ -155,6 +155,11 @@ async function handleGenerateCard() {
   hideCardPreview();
   hideCardError();
 
+  // Hide checkout section if showing
+  if (typeof hideCheckoutSection === 'function') {
+    hideCheckoutSection();
+  }
+
   // Show loading state
   setGenerateLoading(true);
 
@@ -199,6 +204,11 @@ async function handleGenerateCard() {
       expiresAt: data.expiresAt,
       prompt: prompt
     };
+
+    // Show checkout section
+    if (typeof showCheckoutSection === 'function') {
+      showCheckoutSection();
+    }
 
   } catch (error) {
     console.error('Error generating card:', error);
