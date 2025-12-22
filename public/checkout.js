@@ -1,216 +1,285 @@
 /**
  * Checkout Frontend Module
- * Handles Shopify checkout flow for AI-generated greeting cards
+ * Handles the shipping form and checkout flow
  */
 
-// DOM Elements (initialized after DOMContentLoaded)
-let checkoutSection;
-let checkoutForm;
-let checkoutBtn;
-let checkoutBtnText;
-let checkoutBtnLoader;
-let checkoutError;
-let checkoutErrorMessage;
+// DOM Elements
+let buyCardBtn, buyBtnText, buyBtnLoader;
+let checkoutForm, cancelCheckoutBtn, proceedToPaymentBtn;
+let proceedBtnText, proceedBtnLoader;
+let firstNameInput, lastNameInput, emailInput;
+let address1Input, address2Input, cityInput, stateInput, zipInput, countryInput;
 
 /**
- * Initialize the checkout form
+ * Initialize checkout UI elements
  */
 function initCheckout() {
-  // Get DOM elements
-  checkoutSection = document.getElementById('checkoutSection');
-  checkoutForm = document.getElementById('checkoutForm');
-  checkoutBtn = document.getElementById('checkoutBtn');
-  checkoutBtnText = document.getElementById('checkoutBtnText');
-  checkoutBtnLoader = document.getElementById('checkoutBtnLoader');
-  checkoutError = document.getElementById('checkoutError');
-  checkoutErrorMessage = document.getElementById('checkoutErrorMessage');
+    // Buy button elements
+    buyCardBtn = document.getElementById('buyCardBtn');
+    buyBtnText = document.getElementById('buyBtnText');
+    buyBtnLoader = document.getElementById('buyBtnLoader');
 
-  // Check if elements exist
-  if (!checkoutForm) {
+    // Form elements
+    checkoutForm = document.getElementById('checkoutForm');
+    cancelCheckoutBtn = document.getElementById('cancelCheckoutBtn');
+    proceedToPaymentBtn = document.getElementById('proceedToPaymentBtn');
+    proceedBtnText = document.getElementById('proceedBtnText');
+    proceedBtnLoader = document.getElementById('proceedBtnLoader');
+
+    // Input fields
+    firstNameInput = document.getElementById('firstName');
+    lastNameInput = document.getElementById('lastName');
+    emailInput = document.getElementById('email');
+    address1Input = document.getElementById('address1');
+    address2Input = document.getElementById('address2');
+    cityInput = document.getElementById('city');
+    stateInput = document.getElementById('state');
+    zipInput = document.getElementById('zip');
+    countryInput = document.getElementById('country');
+
+    // Check if elements exist
+    if (!buyCardBtn) {
+        if (API_CONFIG.debug) {
+            console.log('Checkout section not found, skipping initialization');
+        }
+        return;
+    }
+
+    // Set up event listeners
+    buyCardBtn.addEventListener('click', handleBuyClick);
+    cancelCheckoutBtn.addEventListener('click', handleCancelCheckout);
+    proceedToPaymentBtn.addEventListener('click', handleProceedToPayment);
+
+    // Clear validation errors on input
+    const inputs = [firstNameInput, lastNameInput, emailInput,
+                    address1Input, cityInput, stateInput, zipInput];
+    inputs.forEach(input => {
+        if (input) {
+            input.addEventListener('input', () => {
+                input.classList.remove('invalid');
+            });
+        }
+    });
+
     if (API_CONFIG.debug) {
-      console.log('Checkout form not found, skipping initialization');
+        console.log('💳 Checkout module initialized');
     }
-    return;
-  }
-
-  // Set up event listeners
-  checkoutForm.addEventListener('submit', handleCheckoutSubmit);
-
-  // Clear error on input focus
-  const formInputs = checkoutForm.querySelectorAll('input, select');
-  formInputs.forEach(input => {
-    input.addEventListener('focus', hideCheckoutError);
-  });
-
-  if (API_CONFIG.debug) {
-    console.log('🛒 Checkout initialized');
-  }
 }
 
 /**
- * Show checkout section (called after card is generated)
+ * Handle "Buy This Card" button click
  */
-function showCheckoutSection() {
-  if (checkoutSection) {
-    checkoutSection.classList.remove('hidden');
-    checkoutSection.classList.add('fade-in');
-    setTimeout(() => checkoutSection.classList.remove('fade-in'), 300);
+function handleBuyClick() {
+    // Check if we have a current card
+    if (!window.currentCard || !window.currentCard.imageId) {
+        showCardError('No card selected. Please generate a card first.');
+        return;
+    }
 
-    // Scroll to checkout section
-    checkoutSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
+    // Check if card has expired
+    if (window.currentCard.expiresAt) {
+        const expiresAt = new Date(window.currentCard.expiresAt);
+        if (expiresAt < new Date()) {
+            showCardError('This card preview has expired. Please generate a new card.');
+            return;
+        }
+    }
+
+    // Show the checkout form
+    checkoutForm.classList.remove('hidden');
+    checkoutForm.classList.add('fade-in');
+
+    // Scroll to form
+    checkoutForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    // Focus first input
+    setTimeout(() => {
+        firstNameInput.focus();
+    }, 300);
 }
 
 /**
- * Hide checkout section
+ * Handle cancel checkout button click
  */
-function hideCheckoutSection() {
-  if (checkoutSection) {
-    checkoutSection.classList.add('hidden');
-  }
+function handleCancelCheckout() {
+    checkoutForm.classList.add('hidden');
+    clearCheckoutForm();
 }
 
 /**
- * Set loading state for checkout button
+ * Clear all form inputs
  */
-function setCheckoutLoading(isLoading) {
-  if (isLoading) {
-    checkoutBtn.disabled = true;
-    checkoutBtnText.classList.add('hidden');
-    checkoutBtnLoader.classList.remove('hidden');
-
-    // Disable form inputs
-    const formInputs = checkoutForm.querySelectorAll('input, select');
-    formInputs.forEach(input => {
-      input.disabled = true;
+function clearCheckoutForm() {
+    const inputs = [firstNameInput, lastNameInput, emailInput,
+                    address1Input, address2Input, cityInput, stateInput, zipInput];
+    inputs.forEach(input => {
+        if (input) {
+            input.value = '';
+            input.classList.remove('invalid');
+        }
     });
-  } else {
-    checkoutBtn.disabled = false;
-    checkoutBtnText.classList.remove('hidden');
-    checkoutBtnLoader.classList.add('hidden');
-
-    // Enable form inputs
-    const formInputs = checkoutForm.querySelectorAll('input, select');
-    formInputs.forEach(input => {
-      input.disabled = false;
-    });
-  }
+    if (countryInput) {
+        countryInput.value = 'US';
+    }
 }
 
 /**
- * Show checkout error message
+ * Validate the checkout form
+ * @returns {Object|null} Validated form data or null if validation fails
  */
-function showCheckoutError(message) {
-  checkoutErrorMessage.textContent = message;
-  checkoutError.classList.remove('hidden');
-  checkoutError.classList.add('fade-in');
-  setTimeout(() => checkoutError.classList.remove('fade-in'), 300);
+function validateCheckoutForm() {
+    const required = [
+        { input: firstNameInput, name: 'First name' },
+        { input: lastNameInput, name: 'Last name' },
+        { input: emailInput, name: 'Email' },
+        { input: address1Input, name: 'Street address' },
+        { input: cityInput, name: 'City' },
+        { input: stateInput, name: 'State' },
+        { input: zipInput, name: 'ZIP code' }
+    ];
 
-  // Scroll to error
-  checkoutError.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
+    let isValid = true;
+    let firstInvalid = null;
 
-/**
- * Hide checkout error message
- */
-function hideCheckoutError() {
-  if (checkoutError) {
-    checkoutError.classList.add('hidden');
-  }
-}
-
-/**
- * Handle checkout form submission
- */
-async function handleCheckoutSubmit(e) {
-  e.preventDefault();
-
-  // Check if we have a current card
-  if (!window.currentCard || !window.currentCard.imageId) {
-    showCheckoutError('No card selected. Please generate a card first.');
-    return;
-  }
-
-  // Hide previous errors
-  hideCheckoutError();
-
-  // Get form data
-  const formData = new FormData(checkoutForm);
-  const shippingAddress = {
-    firstName: formData.get('firstName').trim(),
-    lastName: formData.get('lastName').trim(),
-    address1: formData.get('address1').trim(),
-    address2: formData.get('address2').trim(),
-    city: formData.get('city').trim(),
-    state: formData.get('state').trim().toUpperCase(),
-    zip: formData.get('zip').trim(),
-    country: formData.get('country')
-  };
-
-  const email = formData.get('email').trim();
-
-  // Client-side validation
-  if (!email || !email.includes('@')) {
-    showCheckoutError('Please enter a valid email address');
-    return;
-  }
-
-  // Show loading state
-  setCheckoutLoading(true);
-
-  try {
-    const response = await fetch(API_CONFIG.checkoutEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        imageId: window.currentCard.imageId,
-        imageUrl: window.currentCard.imageUrl,
-        email: email,
-        shippingAddress: shippingAddress
-      })
+    required.forEach(({ input, name }) => {
+        if (!input.value.trim()) {
+            input.classList.add('invalid');
+            isValid = false;
+            if (!firstInvalid) firstInvalid = input;
+        }
     });
 
-    const data = await response.json();
-
-    // Handle rate limiting
-    if (response.status === 429) {
-      showCheckoutError(data.error || 'Order limit exceeded. Please try again later.');
-      return;
+    // Validate email format
+    if (emailInput.value && !isValidEmail(emailInput.value)) {
+        emailInput.classList.add('invalid');
+        isValid = false;
+        if (!firstInvalid) firstInvalid = emailInput;
     }
 
-    if (!response.ok) {
-      throw new Error(data.error || `Request failed with status ${response.status}`);
+    // Validate ZIP format (US: 5 digits or 5+4)
+    if (zipInput.value && countryInput.value === 'US') {
+        if (!/^\d{5}(-\d{4})?$/.test(zipInput.value)) {
+            zipInput.classList.add('invalid');
+            isValid = false;
+            if (!firstInvalid) firstInvalid = zipInput;
+        }
     }
 
-    // Success - redirect to Shopify checkout
-    if (API_CONFIG.debug) {
-      console.log('Order created:', {
-        orderId: data.orderId,
-        checkoutUrl: data.checkoutUrl
-      });
+    if (!isValid) {
+        if (firstInvalid) firstInvalid.focus();
+        return null;
     }
 
-    // Redirect user to Shopify checkout
-    window.location.href = data.checkoutUrl;
+    return {
+        firstName: firstNameInput.value.trim(),
+        lastName: lastNameInput.value.trim(),
+        email: emailInput.value.trim(),
+        address1: address1Input.value.trim(),
+        address2: address2Input.value.trim() || null,
+        city: cityInput.value.trim(),
+        state: stateInput.value.trim().toUpperCase(),
+        zip: zipInput.value.trim(),
+        country: countryInput.value
+    };
+}
 
-  } catch (error) {
-    console.error('Checkout error:', error);
+/**
+ * Simple email validation
+ */
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
-    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-      showCheckoutError('Network error. Please check your connection and try again.');
+/**
+ * Set loading state for proceed button
+ */
+function setProceedLoading(isLoading) {
+    if (isLoading) {
+        proceedToPaymentBtn.disabled = true;
+        cancelCheckoutBtn.disabled = true;
+        proceedBtnText.classList.add('hidden');
+        proceedBtnLoader.classList.remove('hidden');
     } else {
-      showCheckoutError(error.message);
+        proceedToPaymentBtn.disabled = false;
+        cancelCheckoutBtn.disabled = false;
+        proceedBtnText.classList.remove('hidden');
+        proceedBtnLoader.classList.add('hidden');
     }
-  } finally {
-    setCheckoutLoading(false);
-  }
+}
+
+/**
+ * Handle "Proceed to Payment" button click
+ */
+async function handleProceedToPayment() {
+    // Validate form
+    const formData = validateCheckoutForm();
+    if (!formData) {
+        return;
+    }
+
+    // Ensure we have the current card
+    if (!window.currentCard || !window.currentCard.imageId) {
+        showCardError('Card session expired. Please generate a new card.');
+        return;
+    }
+
+    setProceedLoading(true);
+
+    try {
+        const response = await fetch(API_CONFIG.checkoutEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                imageId: window.currentCard.imageId,
+                email: formData.email,
+                shippingAddress: {
+                    firstName: formData.firstName,
+                    lastName: formData.lastName,
+                    address1: formData.address1,
+                    address2: formData.address2,
+                    city: formData.city,
+                    provinceCode: formData.state,
+                    zip: formData.zip,
+                    countryCode: formData.country
+                }
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || `Checkout failed with status ${response.status}`);
+        }
+
+        // Success - redirect to Shopify checkout
+        if (API_CONFIG.debug) {
+            console.log('Checkout created:', {
+                orderId: data.orderId,
+                redirecting: data.checkoutUrl
+            });
+        }
+
+        // Redirect to Shopify checkout URL
+        window.location.href = data.checkoutUrl;
+
+    } catch (error) {
+        console.error('Checkout error:', error);
+
+        if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+            showCardError('Network error. Please check your connection and try again.');
+        } else {
+            showCardError(error.message);
+        }
+
+        setProceedLoading(false);
+    }
 }
 
 // Initialize when DOM is ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initCheckout);
+    document.addEventListener('DOMContentLoaded', initCheckout);
 } else {
-  initCheckout();
+    initCheckout();
 }
