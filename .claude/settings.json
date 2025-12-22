@@ -10,6 +10,7 @@
       "Bash(npm run synth:*)",
       "Bash(npm run synth:test:*)",
       "Bash(npm run)",
+      "Bash(npm run local:*)",
       "Bash(test:*)",
       "Bash(DEPLOY_ENV=test npm run synth:*)",
       "Bash(npx cdk deploy:*)",

@@ -130,6 +130,7 @@ const API_CONFIG = {
   baseUrl: getApiBaseUrl(),
   endpoint: getApiEndpoint(),  // Legacy: multiply endpoint
   generateCardEndpoint: `${getApiBaseUrl()}/generate-card`,
+  checkoutEndpoint: `${getApiBaseUrl()}/checkout`,
   memberstackPublicKey: getMemberstackPublicKey(),
   debug: detectEnvironment() !== 'prod'  // Debug mode for local and test
 };
@@ -140,6 +141,7 @@ if (API_CONFIG.debug) {
   console.log('   Environment:', API_CONFIG.environment.toUpperCase());
   console.log('   Base URL:', API_CONFIG.baseUrl);
   console.log('   Generate Card:', API_CONFIG.generateCardEndpoint);
+  console.log('   Checkout:', API_CONFIG.checkoutEndpoint);
   console.log('   Memberstack Key:', API_CONFIG.memberstackPublicKey.substring(0, 10) + '...');
   console.log('   Debug mode: ON');
   if (API_CONFIG.environment === 'local') {
