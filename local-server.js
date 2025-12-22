@@ -13,11 +13,27 @@ require('dotenv').config();
 
 // Map environment-specific keys to what the Lambda handler expects
 // For local development, use the LOCAL keys
+
+// Memberstack
 if (process.env.CM_MEMBERSTACK_LOCAL_SECRET_KEY && !process.env.MEMBERSTACK_SECRET_KEY) {
   process.env.MEMBERSTACK_SECRET_KEY = process.env.CM_MEMBERSTACK_LOCAL_SECRET_KEY;
 }
 if (process.env.CM_MEMBERSTACK_LOCAL_PUBLIC_KEY && !process.env.MEMBERSTACK_PUBLIC_KEY) {
   process.env.MEMBERSTACK_PUBLIC_KEY = process.env.CM_MEMBERSTACK_LOCAL_PUBLIC_KEY;
+}
+
+// Shopify (use LOCAL keys)
+if (process.env.CM_SHOPIFY_LOCAL_STORE_DOMAIN && !process.env.SHOPIFY_STORE_DOMAIN) {
+  process.env.SHOPIFY_STORE_DOMAIN = process.env.CM_SHOPIFY_LOCAL_STORE_DOMAIN;
+}
+if (process.env.CM_SHOPIFY_LOCAL_ACCESS_TOKEN && !process.env.SHOPIFY_ACCESS_TOKEN) {
+  process.env.SHOPIFY_ACCESS_TOKEN = process.env.CM_SHOPIFY_LOCAL_ACCESS_TOKEN;
+}
+if (process.env.CM_SHOPIFY_LOCAL_CARD_VARIANT_ID && !process.env.SHOPIFY_CARD_VARIANT_ID) {
+  process.env.SHOPIFY_CARD_VARIANT_ID = process.env.CM_SHOPIFY_LOCAL_CARD_VARIANT_ID;
+}
+if (process.env.CM_SHOPIFY_LOCAL_WEBHOOK_SECRET && !process.env.SHOPIFY_WEBHOOK_SECRET) {
+  process.env.SHOPIFY_WEBHOOK_SECRET = process.env.CM_SHOPIFY_LOCAL_WEBHOOK_SECRET;
 }
 
 // Set up environment variables for card generation (required for local testing)
@@ -33,6 +49,7 @@ process.env.BEDROCK_IMAGE_WIDTH = process.env.BEDROCK_IMAGE_WIDTH || '1500';
 process.env.BEDROCK_IMAGE_HEIGHT = process.env.BEDROCK_IMAGE_HEIGHT || '2100';
 process.env.BEDROCK_IMAGE_QUALITY = process.env.BEDROCK_IMAGE_QUALITY || 'premium';
 process.env.MAX_DAILY_GENERATIONS = process.env.MAX_DAILY_GENERATIONS || '50';
+process.env.MAX_DAILY_ORDERS = process.env.MAX_DAILY_ORDERS || '10';
 
 const http = require('http');
 const url = require('url');
@@ -63,7 +80,7 @@ const server = http.createServer((req, res) => {
   const pathname = parsedUrl.pathname;
 
   // Handle POST requests to API endpoints
-  const validPaths = ['/multiply', '/member-info', '/generate-card'];
+  const validPaths = ['/multiply', '/member-info', '/generate-card', '/checkout'];
   if (req.method !== 'POST' || !validPaths.includes(pathname)) {
     res.writeHead(404, { 'Content-Type': 'application/json' });
     res.end(JSON.stringify({ error: 'Not found. Valid endpoints: ' + validPaths.join(', ') }));
@@ -117,6 +134,7 @@ server.listen(PORT, HOST, () => {
   console.log(`   POST /multiply       - Multiply a number by 3`);
   console.log(`   POST /member-info    - Get member info (requires auth)`);
   console.log(`   POST /generate-card  - Generate AI greeting card`);
+  console.log(`   POST /checkout       - Create Shopify draft order`);
   console.log(`\n📝 Example requests:`);
   console.log(`curl -X POST http://localhost:3001/multiply \\`);
   console.log(`  -H "Content-Type: application/json" \\`);
@@ -124,8 +142,8 @@ server.listen(PORT, HOST, () => {
   console.log(`\ncurl -X POST http://localhost:3001/generate-card \\`);
   console.log(`  -H "Content-Type: application/json" \\`);
   console.log(`  -d '{"prompt": "sunset over mountains"}'`);
-  console.log(`\n⚠️  Note: /generate-card requires AWS credentials and resources`);
-  console.log(`   (DynamoDB, S3, Bedrock access). Deploy to test for full testing.`);
+  console.log(`\n⚠️  Note: /generate-card and /checkout require AWS credentials and resources`);
+  console.log(`   (DynamoDB, S3, Bedrock, Shopify). Deploy to test for full testing.`);
   console.log(`\n🔍 Debugging: Set breakpoints in src/lambda/handler.js`);
   console.log(`\nPress Ctrl+C to stop\n`);
 });

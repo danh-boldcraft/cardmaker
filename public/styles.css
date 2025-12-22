@@ -444,6 +444,112 @@ textarea:disabled {
     font-weight: 600;
 }
 
+/* Checkout Section */
+.checkout-section {
+    margin-top: 25px;
+    padding: 25px;
+    background: #f8f9fa;
+    border-radius: 10px;
+}
+
+.checkout-section h3 {
+    color: #667eea;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.price {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #555;
+}
+
+input[type="text"],
+input[type="email"],
+select {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    outline: none;
+    background: white;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+input[type="text"]:disabled,
+input[type="email"]:disabled,
+select:disabled {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+select {
+    cursor: pointer;
+}
+
+.checkout-btn {
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.checkout-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(17, 153, 142, 0.3);
+}
+
+.checkout-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.checkout-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 /* Container adjustments */
 .container {
     max-width: 700px;
@@ -469,5 +575,17 @@ textarea:disabled {
 
     .card-image-container img {
         max-height: 300px;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .checkout-section {
+        padding: 20px 15px;
+    }
+
+    .price {
+        font-size: 1.3rem;
     }
 }
