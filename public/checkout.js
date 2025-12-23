@@ -249,6 +249,13 @@ async function handleProceedToPayment() {
 
         const data = await response.json();
 
+        // Handle rate limiting
+        if (response.status === 429) {
+            showCardError(data.error || 'Order limit exceeded. Please try again later.');
+            setProceedLoading(false);
+            return;
+        }
+
         if (!response.ok) {
             throw new Error(data.error || `Checkout failed with status ${response.status}`);
         }
