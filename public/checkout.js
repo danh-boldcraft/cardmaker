@@ -240,9 +240,9 @@ async function handleProceedToPayment() {
                     address1: formData.address1,
                     address2: formData.address2,
                     city: formData.city,
-                    provinceCode: formData.state,
+                    state: formData.state,
                     zip: formData.zip,
-                    countryCode: formData.country
+                    country: formData.country
                 }
             })
         });
