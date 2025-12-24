@@ -4,6 +4,7 @@
  */
 
 const { verifyShopifyHmac } = require('../utils/shopify-hmac');
+const { submitOrder } = require('../services/printify-service');
 
 const CORS_HEADERS = {
   'Content-Type': 'application/json',
@@ -152,25 +153,59 @@ async function handleShopifyWebhook(event) {
     };
   }
 
-  // TODO: Phase 4c - Submit order to Printify
-  // For now, just log that we're ready to fulfill
-  console.log('Ready to submit to Printify:', {
+  // Submit order to Printify for fulfillment
+  console.log('Submitting order to Printify:', {
     orderId: order.id,
     email: order.email,
-    cardItems,
-    shippingAddress
+    cardCount: cardItems.length
   });
 
-  // Return success
-  return {
-    statusCode: 200,
-    headers: CORS_HEADERS,
-    body: JSON.stringify({
-      received: true,
-      orderId: order.id,
-      cardsToFulfill: cardItems.length
-    })
-  };
+  const printifyResult = await submitOrder({
+    shopifyOrderId: order.id,
+    email: order.email,
+    cardItems: cardItems,
+    shippingAddress: shippingAddress
+  });
+
+  if (printifyResult.success) {
+    console.log('Printify order submitted successfully:', {
+      shopifyOrderId: order.id,
+      printifyOrderId: printifyResult.printifyOrderId,
+      status: printifyResult.status
+    });
+
+    return {
+      statusCode: 200,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({
+        received: true,
+        orderId: order.id,
+        cardsToFulfill: cardItems.length,
+        printifyOrderId: printifyResult.printifyOrderId,
+        printifyStatus: printifyResult.status
+      })
+    };
+  } else {
+    // Log the error but still return 200 to Shopify
+    // Returning non-200 would cause Shopify to retry, which won't help
+    console.error('Printify order submission failed:', {
+      shopifyOrderId: order.id,
+      error: printifyResult.error,
+      details: printifyResult.details
+    });
+
+    return {
+      statusCode: 200,
+      headers: CORS_HEADERS,
+      body: JSON.stringify({
+        received: true,
+        orderId: order.id,
+        cardsToFulfill: cardItems.length,
+        printifyError: printifyResult.error,
+        message: 'Order received but Printify submission failed - requires manual intervention'
+      })
+    };
+  }
 }
 
 module.exports = { handleShopifyWebhook };
