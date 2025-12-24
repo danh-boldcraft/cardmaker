@@ -1,6 +1,7 @@
 const https = require('https');
 const { handleGenerateCard } = require('./handlers/generate-card');
 const { handleCheckout } = require('./handlers/checkout');
+const { handleShopifyWebhook } = require('./handlers/shopify-webhook');
 
 function memberstackRequest(path, method, body, secretKey) {
   return new Promise((resolve, reject) => {
@@ -114,6 +115,10 @@ exports.handler = async (event) => {
 
     if (path === '/checkout') {
         return handleCheckout(event);
+    }
+
+    if (path === '/webhooks/shopify/orders/paid') {
+        return handleShopifyWebhook(event);
     }
 
     // Original multiply logic continues below...
